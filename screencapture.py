@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 from mss.windows import MSS as mss 
-from pynput.mouse import Button, Controller
+from pynput import mouse
+import time
 
 class windowCapture:
 
@@ -14,23 +15,17 @@ class windowCapture:
     def save_image(self, fileName):
         self._image.save(fileName, format="png")
 
-    @staticmethod
-    def list_windows_names():
-        def winEnumHandler( hwnd, ctx ):
-            if win32gui.IsWindowVisible( hwnd ):
-                print (hex(hwnd), win32gui.GetWindowText( hwnd ))
-
-        win32gui.EnumWindows( winEnumHandler, None )
 
     @staticmethod
     def get_screen():
         with mss() as sct:
-            monitor = {"top": 40, "left": 0, "width": 800, "height": 640}
+            monitor = {"top": 300, "left": 600, "width": 700, "height": 200}
+            time.sleep(5)
             while "Screen capturing":
-                last_time = time()
+                last_time = time.time()
 
                 # Get raw pixels from the screen, save it to a Numpy array
-                img = numpy.array(sct.grab(monitor))
+                img = np.array(sct.grab(monitor))
 
                 # Display the picture
                 # cv2.imshow("OpenCV/Numpy normal", img)
@@ -39,13 +34,39 @@ class windowCapture:
                 cv2.imshow('OpenCV/Numpy grayscale', 
                         cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY))
 
-                print("fps: {}".format(1 / (time() - last_time)))
+                print("fps: {}".format(1 / (time.time() - last_time)))
 
+                cv2.waitKey(0)
+                cv2.destroyAllWindows
+                break
                 # Press "q" to quit
-                if (cv2.waitKey(1) & 0xFF == ord("q")):
-                    cv2.destroyAllWindows()
-                    break
+                # if (cv2.waitKey(1) & 0xFF == ord("q")):
+                #     cv2.destroyAllWindows()
+                #     break
         return
+
+"""
+    @staticmethod
+    def get_image_box():
+        def on_click(x, y, button, pressed):
+            global num_clicks
+            print('{0} at {1}'.format(
+                'Pressed' if pressed else 'Released',
+                (x, y)))
+            num_clicks += 1
+            if num_clicks == 2:
+                # Stop listener
+                del num_clicks
+                return False
+
+
+        with mouse.Listener(on_click=on_click) as listener:
+            listener.join()
+"""
+
+        
+
+        
 
 
 
