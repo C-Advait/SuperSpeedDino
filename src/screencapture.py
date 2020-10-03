@@ -17,33 +17,33 @@ class windowCapture:
 
 
     @staticmethod
-    def get_screen():
-        with mss() as sct:
-            monitor = {"top": 300, "left": 600, "width": 700, "height": 200}
-            time.sleep(5)
-            while "Screen capturing":
-                last_time = time.time()
+    def get_screen(top = 300, left = 600, width = 700, height = 200, continuousRun = False, queue = None):
+        """Get np.array of the screen area specified.
 
-                # Get raw pixels from the screen, save it to a Numpy array
+        Args:
+            top (int, optional): y position, upper left hand corner. Measured from top left of screen. Defaults to 300.
+            left (int, optional): x position, upper left hand corner. Measured from top left of screen. Defaults to 600.
+            width (int, optional): x offset from 'left' to capture. Width of image. Defaults to 700.
+            height (int, optional): y offset from 'top' to capture. Height of image. Defaults to 200.
+
+            OTHER PARAMS NOT DESCRIBED ATM
+
+        Returns:
+            np.array: np.arry of pixels on screen. Captured using mss() library
+        """
+        with mss() as sct:
+            monitor = {"top": top, "left": left, "width": width, "height": height}
+            time.sleep(5) #open game window in this time frame
+            while continuousRun:
                 img = np.array(sct.grab(monitor))
 
-                # Display the picture
-                # cv2.imshow("OpenCV/Numpy normal", img)
+                #queue.put(img) #implement later
+            else:
+                img = np.array(sct.grab(monitor))
+                return img
+        
+        raise EOFError('should never have gotten here')
 
-                # Display the picture in grayscale
-                cv2.imshow('OpenCV/Numpy grayscale', 
-                        cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY))
-
-                print("fps: {}".format(1 / (time.time() - last_time)))
-
-                cv2.waitKey(0)
-                cv2.destroyAllWindows
-                break
-                # Press "q" to quit
-                # if (cv2.waitKey(1) & 0xFF == ord("q")):
-                #     cv2.destroyAllWindows()
-                #     break
-        return
 
 """
     @staticmethod
