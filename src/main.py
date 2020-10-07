@@ -8,35 +8,35 @@ from mss.windows import MSS as mss
 from pynput.mouse import Button, Controller
 from time import time
 
+
 sys.path.append('/../')
 
 def main():
 
-    template_files = os.listdir('images/templates')
+    template_files = os.listdir('images/obstacle_images')
     for index, fileName in enumerate(template_files):
-        template_files[index] = 'images/templates/' + fileName
+        template_files[index] = 'images/obstacle_images/' + fileName
 
-    imgProcess = imageProcess(template_files)
+    imgProcess = imageProcess(template_files, 'images/dinosaur.PNG')
+    # img = windowCapture.get_screen()
+    # # print(img)
+    # cv2.imshow('image', img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows
+    # imgProcess.find_dino(cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY), drawRect = True)
 
-    imgProcess.find_match(cv2.imread('images/example_cactuses.PNG', cv2.IMREAD_GRAYSCALE), drawRect = True)
+    # # for template in imgProcess.templates:
+    # #     imgProcess.find_obstacle(cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY), template, drawRect = True)
+    # imgProcess.get_distance(img)
 
+    score_img = windowCapture.get_screen(top = 300, left = 1080, width = 200, height = 50)
+    imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     ## test
     # img = windowCapture.get_screen()
     # imageProcess.show_image(img)
-    
-def loop_run():
-    loop_time = time()
-    while(True):
-        screenshot = windowCapture.get_screen()
 
-        # cv2.imshow('image',screenshot)
-        print('FPS is {}'.format(1/ (time() - loop_time)))
-        loop_time= time()
+    imgProcess.get_score(score_img)
 
-        #GAIN OF 30 FPS if not using if check
-        # if cv2.waitKey(1) == ord('q'):
-        #     cv2.destroyAllWindows()
-        #     break
 
 if __name__ == "__main__":
     main()

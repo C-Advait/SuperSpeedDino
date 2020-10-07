@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from mss.windows import MSS as mss 
+from mss.windows import MSS as mss
 from pynput import mouse
 import time
 
@@ -8,7 +8,7 @@ class windowCapture:
 
     def __init__(self):
         self._image = None
-    
+
     def show_image(self):
         self._image.show()
 
@@ -41,7 +41,7 @@ class windowCapture:
             else:
                 img = np.array(sct.grab(monitor))
                 return img
-        
+
         raise EOFError('should never have gotten here')
 
 
@@ -64,9 +64,9 @@ class windowCapture:
             listener.join()
 """
 
-        
 
-        
+
+
 
 
 
@@ -87,7 +87,7 @@ class windowCapture:
     # def get_screen():
     #     w = 1200
     #     h = 720
-        
+
     #     # hwnd = win32gui.FindWindow(None, screenName)
     #     hwnd = None
 
@@ -98,19 +98,19 @@ class windowCapture:
     #     dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
     #     cDC.SelectObject(dataBitMap)
     #     cDC.BitBlt((0, 0), (w, h), dcObj, (0, 0), win32con.SRCCOPY)
-        
+
     #     signedIntsArray = dataBitMap.GetBitmapBits(True)
     #     img = np.fromstring(signedIntsArray, dtype='uint8')
     #     img.shape = (h, w, 4)
     #     #dont want to save to a literal file
     #     #dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
-        
+
     #     # Free Resources
     #     dcObj.DeleteDC()
     #     cDC.DeleteDC()
     #     win32gui.ReleaseDC(hwnd, wDC)
     #     win32gui.DeleteObject(dataBitMap.GetHandle())
-        
+
     #     img = np.array(img)
     #     img = cv2.cvtColor(img, 1)
     #     return img
