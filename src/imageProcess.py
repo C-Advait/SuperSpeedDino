@@ -17,7 +17,7 @@ import numpy as np
 
 class imageProcess:
 
-    def __init__(self, list_of_template_paths, dino_image_path, method = cv2.TM_CCOEFF_NORMED):
+    def __init__(self, list_of_template_paths, dino_image_path, method = cv2.TM_CCOEFF_NORMED, **kwargs):
         """list of template paths to use matchTemplate on. Must do if there is intent of using match template
 
         Args:
@@ -125,16 +125,15 @@ class imageProcess:
 
         return distList
 
-    def get_score(self, image = None):
-        img = cv2.imread(r'C:\Users\advai\Documents\programming\dinosaur_algorithm\images\score_test.PNG')
-        kernel = np.ones((2,2),np.float32)/3
-        dst = cv2.filter2D(img,-1,kernel)
-        cv2.imwrite(r'C:\Users\advai\Documents\programming\dinosaur_algorithm\images\Smoothed_image.PNG', dst)
-        plt.subplot(121),plt.imshow(img),plt.title('Original')
-        plt.xticks([]), plt.yticks([])
-        plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
-        plt.xticks([]), plt.yticks([])
-        plt.show()
+    def get_score(self, image):
 
-        text = pytesseract.image_to_string(Image.open(r'C:\Users\advai\Documents\programming\dinosaur_algorithm\images\Smoothed_image.PNG'))
+        kernel = np.ones((2,2),np.float32)/3
+        dst = cv2.filter2D(image,-1,kernel)
+        # plt.subplot(121),plt.imshow(img),plt.title('Original') # Plotting...
+        # plt.xticks([]), plt.yticks([])
+        # plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
+        # plt.xticks([]), plt.yticks([])
+        # plt.show()                                              #End Plotting
+
+        text = pytesseract.image_to_string(dst)
         print(text)

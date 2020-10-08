@@ -19,11 +19,11 @@ def main():
 
     imgProcess = imageProcess(template_files, 'images/dinosaur.PNG')
     # img = windowCapture.get_screen()
-    # # print(img)
+    # # # print(img)
     # cv2.imshow('image', img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows
-    # imgProcess.find_dino(cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY), drawRect = True)
+    # # imgProcess.find_dino(cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY), drawRect = True)
 
     # # for template in imgProcess.templates:
     # #     imgProcess.find_obstacle(cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY), template, drawRect = True)
