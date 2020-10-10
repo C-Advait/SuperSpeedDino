@@ -4,7 +4,7 @@ from mss.windows import MSS as mss
 from pynput import mouse
 import time
 
-class windowCapture:
+class ScreenCapture:
 
     def __init__(self):
         self._image = None

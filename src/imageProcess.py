@@ -7,15 +7,9 @@ from matplotlib import pyplot as plt
 sys.path.append('/../')
 pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 import numpy as np
-##check to make sure filepaths and imports are working correctly
-# test = cv2.imread('images/templates/double_cactus_small.PNG')
-# cv2.imshow('OpenCV/Numpy grayscale',
-#         cv2.cvtColor(test, cv2.COLOR_BGRA2GRAY))
-# cv2.waitKey(0)
-# cv2.destroyAllWindows
 
 
-class imageProcess:
+class ImageProcess:
 
     def __init__(self, list_of_template_paths, dino_image_path, method = cv2.TM_CCOEFF_NORMED, **kwargs):
         """list of template paths to use matchTemplate on. Must do if there is intent of using match template
