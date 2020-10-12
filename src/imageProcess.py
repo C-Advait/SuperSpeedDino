@@ -17,11 +17,11 @@ class ImageProcess:
         Args:
             list_of_template_paths (list): list of file paths of the images to use as templates.
         """
-        self.templates = []
+        self.templates = {}
         for templatePath in list_of_template_paths:
             print(templatePath)
-            self.templates.append(cv2.imread(templatePath, cv2.IMREAD_GRAYSCALE))
 
+            self.templates[templatePath[23:-4]] = cv2.imread(templatePath, cv2.IMREAD_GRAYSCALE)
                     #print(self.templates)
                     #make sure all templates were read correctly
                     ####NO CHECK CURRENTLY
@@ -97,14 +97,15 @@ class ImageProcess:
         return None #####probably shouldnt be returning anything
 
 
-    def get_distance(self, image, ):
+    def get_distance(self, image, drawRect = False):
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
-        x_diff = 0
-        y_diff = 0
-        distList = []
-        for template in self.templates:
-            dino_loc = self.find_dino(converted_image)
-            obs_loc = self.find_obstacle(converted_image, template, drawRect= True)
+        x_diff = None
+        y_diff = None
+        obstacle_distances = {}
+        for name, template in self.templates.items():
+
+            dino_loc = self.find_dino(converted_image, drawRect = drawRect)
+            obs_loc = self.find_obstacle(converted_image, template, drawRect= drawRect)
 
             if obs_loc != None:
                 x_diff = obs_loc[0] - dino_loc[0]
@@ -115,11 +116,14 @@ class ImageProcess:
                             color = (0, 255, 0), thickness= 2, lineType=cv2.LINE_4)
                 self.show_image(converted_image)
 
-                distList.append((x_diff, y_diff))
+                obstacle_distances[name] = (x_diff, y_diff)
 
-        return distList
+            x_diff = None
+            y_diff = None
 
-    def get_score(self, image):
+        return obstacle_distances
+
+    def get_score(self, image, ):
 
         kernel = np.ones((2,2),np.float32)/3
         dst = cv2.filter2D(image,-1,kernel)

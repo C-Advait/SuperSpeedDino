@@ -23,7 +23,8 @@ def main():
 
     #get image and find distance to all obstacles
     img = ScreenCapture.get_screen()
-    imgProcess.get_distance(img)
+    res = imgProcess.get_distance(img, drawRect = True)
+    print(res)
 
     #get score of the run
     score_img = windowCapture.get_screen(top = 300, left = 1080, width = 200, height = 50)

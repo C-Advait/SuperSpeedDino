@@ -17,7 +17,7 @@ class ScreenCapture:
 
 
     @staticmethod
-    def get_screen(top = 300, left = 600, width = 700, height = 200, continuousRun = False, queue = None):
+    def get_screen(top = 300, left = 600, width = 700, height = 200, continuousRun = False, queue = None, delay= 5):
         """Get np.array of the screen area specified.
 
         Args:
@@ -33,7 +33,10 @@ class ScreenCapture:
         """
         with mss() as sct:
             monitor = {"top": top, "left": left, "width": width, "height": height}
-            time.sleep(5) #open game window in this time frame
+
+            if delay:
+                time.sleep(delay) #open game window in this time frame
+
             while continuousRun:
                 img = np.array(sct.grab(monitor))
 
@@ -43,74 +46,3 @@ class ScreenCapture:
                 return img
 
         raise EOFError('should never have gotten here')
-
-
-"""
-    @staticmethod
-    def get_image_box():
-        def on_click(x, y, button, pressed):
-            global num_clicks
-            print('{0} at {1}'.format(
-                'Pressed' if pressed else 'Released',
-                (x, y)))
-            num_clicks += 1
-            if num_clicks == 2:
-                # Stop listener
-                del num_clicks
-                return False
-
-
-        with mouse.Listener(on_click=on_click) as listener:
-            listener.join()
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # @staticmethod
-    # def get_screen():
-    #     w = 1200
-    #     h = 720
-
-    #     # hwnd = win32gui.FindWindow(None, screenName)
-    #     hwnd = None
-
-    #     wDC = win32gui.GetWindowDC(hwnd)
-    #     dcObj = win32ui.CreateDCFromHandle(wDC)
-    #     cDC = dcObj.CreateCompatibleDC()
-    #     dataBitMap = win32ui.CreateBitmap()
-    #     dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
-    #     cDC.SelectObject(dataBitMap)
-    #     cDC.BitBlt((0, 0), (w, h), dcObj, (0, 0), win32con.SRCCOPY)
-
-    #     signedIntsArray = dataBitMap.GetBitmapBits(True)
-    #     img = np.fromstring(signedIntsArray, dtype='uint8')
-    #     img.shape = (h, w, 4)
-    #     #dont want to save to a literal file
-    #     #dataBitMap.SaveBitmapFile(cDC, bmpfilenamename)
-
-    #     # Free Resources
-    #     dcObj.DeleteDC()
-    #     cDC.DeleteDC()
-    #     win32gui.ReleaseDC(hwnd, wDC)
-    #     win32gui.DeleteObject(dataBitMap.GetHandle())
-
-    #     img = np.array(img)
-    #     img = cv2.cvtColor(img, 1)
-    #     return img
