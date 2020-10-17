@@ -59,7 +59,7 @@ class ImageProcess:
                             color = (0, 255, 0), thickness= 2, lineType=cv2.LINE_4)
 
             self.show_image(image)
-
+        print(bottom_right)
         return (bottom_right) #use bottom right corner to find distance from dino to object
 
 
@@ -102,9 +102,9 @@ class ImageProcess:
         x_diff = None
         y_diff = None
         obstacle_distances = {}
+        dino_loc = self.find_dino(converted_image, drawRect = drawRect)
         for name, template in self.templates.items():
 
-            dino_loc = self.find_dino(converted_image, drawRect = drawRect)
             obs_loc = self.find_obstacle(converted_image, template, drawRect= drawRect)
 
             if obs_loc != None:
@@ -120,6 +120,7 @@ class ImageProcess:
 
             x_diff = None
             y_diff = None
+            obs_loc = None
 
         return obstacle_distances
 

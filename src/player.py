@@ -32,4 +32,4 @@ class Player:
         while not game_over:
             #game starts. find image and make play
             img = ScreenCapture.get_screen(delay= 0)
-            game_vision.
+            res = game_vision.get_distance(img)
