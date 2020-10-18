@@ -112,15 +112,20 @@ class ImageProcess:
                 y_diff = obs_loc[1] - dino_loc[1]
 
                 p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
-                cv2.line(converted_image, dino_loc, p2,
-                            color = (0, 255, 0), thickness= 2, lineType=cv2.LINE_4)
-                self.show_image(converted_image)
+
+                if drawRect == True:
+                    cv2.line(converted_image, dino_loc, p2,
+                                color = (0, 255, 0), thickness= 2, lineType=cv2.LINE_4)
+                    self.show_image(converted_image)
 
                 obstacle_distances[name] = (x_diff, y_diff)
 
             x_diff = None
             y_diff = None
             obs_loc = None
+
+        if 'game_over' in obstacle_distances.keys():
+            return -1
 
         return obstacle_distances
 
@@ -132,7 +137,7 @@ class ImageProcess:
         # plt.xticks([]), plt.yticks([])
         # plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
         # plt.xticks([]), plt.yticks([])
-        # plt.show()                                              #End Plotting
+        # plt.show()                                             #End Plotting
 
         text = pytesseract.image_to_string(dst)
         print(text)
