@@ -20,11 +20,15 @@ class Player:
 
         self.create_genetic_info()
 
-    def jump(self, time = 0.1): #press up key for `time` seconds
-        press('up', _pause= time)
+    def jump(self, time = 1): #press up key for `time` seconds
+        keyDown('up')
+        sleep(time)
+        keyUp('up')
 
-    def duck(self, time = 0.1): #press the down key for `time` seconds
-        press('down', _pause= time)
+    def duck(self, time = 1): #press the down key for `time` seconds
+        keyDown('down')
+        sleep(time)
+        keyUp('down')
 
     def create_genetic_info(self):
 
@@ -32,12 +36,13 @@ class Player:
             for i in range(len(self.decisionGenes[key])):
                 for j in range( len(self.decisionGenes[key][i]) ):
 
-                    coinFlip = random.randint(0,100)
+                    randAction = random.randint(0,1)
+                    randSleep = random.uniform(0.5, 1.5)
 
-                    if coinFlip % 2 == 0:
-                        self.decisionGenes[key][i][j] = self.duck
+                    if randAction == 0:
+                        self.decisionGenes[key][i][j] = (self.duck, randSleep)
                     else:
-                        self.decisionGenes[key][i][j] = self.jump
+                        self.decisionGenes[key][i][j] = (self.jump, randSleep)
 
 
 
@@ -66,8 +71,8 @@ class Player:
 
                     # the action is that obstacle's action is the gene
                     #encoded for the obstacle and its x, y distance
-                    action = self.decisionGenes[obstacle][distance[0]][distance[1]]
-                    action()
+                    action, sleep = self.decisionGenes[obstacle][distance[0]][distance[1]]
+                    action(time = sleep)
 
             else:
                 game_over = True
@@ -75,6 +80,7 @@ class Player:
 
 def main():
     player = Player()
+    print(player.decisionGenes['quadruple_cactus'][0][0:20])
     player.play()
 
 if __name__ == "__main__":
