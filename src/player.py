@@ -4,6 +4,7 @@ from screencapture import ScreenCapture
 from time import sleep
 import sys, os
 import random
+import threading
 
 class Player:
 
@@ -19,6 +20,9 @@ class Player:
             self.decisionGenes[key] = [ [ [] for i in range(100) ] for i in range(951) ]
 
         self.create_genetic_info()
+
+    def raise_wait(self, time):
+        pass
 
     def jump(self, time = 1): #press up key for `time` seconds
         keyDown('up')
@@ -63,6 +67,7 @@ class Player:
 
         game_over = False
         press('space') #start game
+        print('game started ')
 
 
         while not game_over:
@@ -79,15 +84,18 @@ class Player:
 
             else:
                 game_over = True
-        score_img = ScreenCapture.get_screen(top = 300, left = 1500, width = 100, height = 50, delay = 2)
+        score_img = ScreenCapture.get_screen(top = 300, left = 1500, width = 100, height = 50, delay = 0)
         score = int(game_vision.get_score(score_img))
         print(score)
 
         return score
 
+    def __len__(self):
+        return 95100
 
 def main():
     player = Player()
+    sleep(2)
     player.play()
 
 if __name__ == "__main__":

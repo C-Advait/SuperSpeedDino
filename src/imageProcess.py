@@ -19,7 +19,7 @@ class ImageProcess:
         """
         self.templates = {}
         for templatePath in list_of_template_paths:
-            print(templatePath)
+            # print(templatePath)
 
             self.templates[templatePath[23:-4]] = cv2.imread(templatePath, cv2.IMREAD_GRAYSCALE)
                     #print(self.templates)

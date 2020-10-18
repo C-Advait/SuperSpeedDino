@@ -25,7 +25,7 @@ def main():
     toolbox.register("select", tools.selTournament, tournsize=3)
 
 
-    pop = toolbox.population(n=20)
+    pop = toolbox.population(n=2)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
@@ -42,7 +42,6 @@ def main():
 
     # Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
-    print(fitnesses)
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = (fit,)
 
@@ -67,7 +66,6 @@ def main():
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
-
             # cross two individuals with probability CXPB
             if random.random() < CXPB:
                 toolbox.mate(child1, child2)
@@ -108,10 +106,10 @@ def main():
         print("  Avg %s" % mean)
         print("  Std %s" % std)
 
-    print("-- End of (successful) evolution --")
+        print("-- End of (successful) evolution --")
 
-    best_ind = tools.selBest(pop, 1)[0]
-    print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+        best_ind = tools.selBest(pop, 1)[0]
+        print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
 if __name__ == "__main__":
     main()
