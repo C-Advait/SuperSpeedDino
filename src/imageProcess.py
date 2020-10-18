@@ -59,7 +59,7 @@ class ImageProcess:
                             color = (0, 255, 0), thickness= 2, lineType=cv2.LINE_4)
 
             self.show_image(image)
-        print(bottom_right)
+        # print(bottom_right)
         return (bottom_right) #use bottom right corner to find distance from dino to object
 
 
@@ -68,8 +68,8 @@ class ImageProcess:
         result = cv2.matchTemplate(converted_image, template, self.match_method)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
         threshold = 0.9
-        print('maxval is: ', max_val)
-        print('max_loc is: ', max_loc)
+        # print('maxval is: ', max_val)
+        # print('max_loc is: ', max_loc)
 
         if max_val >= threshold:
             if drawRect:
@@ -85,13 +85,15 @@ class ImageProcess:
                 print('\n')
                 self.show_image(converted_image)
             else:
-                print("did not want to show rectangle\n")
+                pass
+                # print("did not want to show rectangle\n")
                 #place result into pipe or whatever. Or send to some getDistance() between dino and obstacle.
 
             return max_loc #top left of the template found in the image
 
         else:
-            print('threshold of {} was not met, max_val was {}. \n'.format(threshold, max_val, ))
+            pass
+            # print('threshold of {} was not met, max_val was {}. \n'.format(threshold, max_val, ))
 
 
         return None #####probably shouldnt be returning anything
@@ -139,5 +141,6 @@ class ImageProcess:
         # plt.xticks([]), plt.yticks([])
         # plt.show()                                             #End Plotting
 
-        text = pytesseract.image_to_string(dst)
-        print(text)
+        score = pytesseract.image_to_string(dst)
+        # print(score)
+        return score

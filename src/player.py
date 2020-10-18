@@ -30,20 +30,24 @@ class Player:
         sleep(time)
         keyUp('down')
 
+    def do_nothing(self, time = 1):
+        sleep(time)
+
     def create_genetic_info(self):
 
         for key in self.decisionGenes.keys():
             for i in range(len(self.decisionGenes[key])):
                 for j in range( len(self.decisionGenes[key][i]) ):
 
-                    randAction = random.randint(0,1)
-                    randSleep = random.uniform(0.5, 1.5)
+                    randAction = random.randint(0,2)
+                    randSleep = random.uniform(0.2, 1.5)
 
                     if randAction == 0:
                         self.decisionGenes[key][i][j] = (self.duck, randSleep)
-                    else:
+                    elif randAction == 1:
                         self.decisionGenes[key][i][j] = (self.jump, randSleep)
-
+                    else:
+                        self.decisionGenes[key][i][j] = (self.do_nothing, randSleep)
 
 
 
@@ -58,7 +62,6 @@ class Player:
         game_vision = ImageProcess(template_files, dinosaur_image_path) #get vision of the game
 
         game_over = False
-        ScreenCapture.get_screen(delay = 5) #delay to put game into focus
         press('space') #start game
 
 
@@ -76,11 +79,15 @@ class Player:
 
             else:
                 game_over = True
+        score_img = ScreenCapture.get_screen(top = 300, left = 1500, width = 100, height = 50, delay = 2)
+        score = int(game_vision.get_score(score_img))
+        print(score)
+
+        return score
 
 
 def main():
     player = Player()
-    print(player.decisionGenes['quadruple_cactus'][0][0:20])
     player.play()
 
 if __name__ == "__main__":
