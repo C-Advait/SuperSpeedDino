@@ -4,8 +4,8 @@ from mss.windows import MSS as mss
 from pynput import mouse
 import time
 
-class ScreenCapture:
 
+class ScreenCapture:
     def __init__(self):
         self._image = None
 
@@ -15,9 +15,16 @@ class ScreenCapture:
     def save_image(self, fileName):
         self._image.save(fileName, format="png")
 
-
     @staticmethod
-    def get_screen(top = 300, left = 600, width = 700, height = 200, continuousRun = False, queue = None, delay= 5):
+    def get_screen(
+        top=300,
+        left=600,
+        width=700,
+        height=200,
+        continuousRun=False,
+        queue=None,
+        delay=5,
+    ):
         """Get np.array of the screen area specified.
 
         Args:
@@ -35,14 +42,14 @@ class ScreenCapture:
             monitor = {"top": top, "left": left, "width": width, "height": height}
 
             if delay:
-                time.sleep(delay) #open game window in this time frame
+                time.sleep(delay)  # open game window in this time frame
 
             while continuousRun:
                 img = np.array(sct.grab(monitor))
 
-                #queue.put(img) #implement later
+                # queue.put(img) #implement later
             else:
                 img = np.array(sct.grab(monitor))
                 return img
 
-        raise EOFError('should never have gotten here')
+        raise EOFError("should never have gotten here")

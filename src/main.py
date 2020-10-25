@@ -8,17 +8,18 @@ from mss.windows import MSS as mss
 from pynput.mouse import Button, Controller
 
 
-sys.path.append('/../')
+sys.path.append("/../")
+
 
 def main():
 
-    #load obstacles
-    template_files = os.listdir('images/obstacle_images')
+    # load obstacles
+    template_files = os.listdir("images/obstacle_images")
     for index, fileName in enumerate(template_files):
-        template_files[index] = 'images/obstacle_images/' + fileName
+        template_files[index] = "images/obstacle_images/" + fileName
 
-    #Create image processing object to use detection with
-    imgProcess = ImageProcess(template_files, 'images/dinosaur.PNG')
+    # Create image processing object to use detection with
+    imgProcess = ImageProcess(template_files, "images/dinosaur.PNG")
 
     # #get image and find distance to all obstacles
     # img = ScreenCapture.get_screen(top = 300, left = 1000, width = 700, height = 200)
@@ -26,7 +27,9 @@ def main():
     # print(res)
 
     # #get score of the run
-    score_img = ScreenCapture.get_screen(top = 300, left = 1500, width = 100, height = 50, delay = 2)
+    score_img = ScreenCapture.get_screen(
+        top=300, left=1500, width=100, height=50, delay=2
+    )
     imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     score = imgProcess.get_score(score_img)
     print(int(score))
