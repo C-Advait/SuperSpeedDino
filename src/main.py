@@ -3,12 +3,20 @@ from imageProcess import ImageProcess
 import sys, os
 import cv2
 import numpy
-from time import time
+import time
 from mss.windows import MSS as mss
 from pynput.mouse import Button, Controller
-
+from player import Player
 
 sys.path.append("/../")
+
+
+def play_game():
+    player = Player()
+    print('5s to get screen open')
+    time.sleep(5)
+    player.play()
+
 
 
 def main():
@@ -22,9 +30,9 @@ def main():
     imgProcess = ImageProcess(template_files, "images/dinosaur.PNG")
 
     # #get image and find distance to all obstacles
-    # img = ScreenCapture.get_screen(top = 300, left = 1000, width = 700, height = 200)
-    # res = imgProcess.get_distance(img, drawRect = True)
-    # print(res)
+    img = ScreenCapture.get_screen(top = 300, left = 1000, width = 700, height = 200)
+    res = imgProcess.get_distance(img, drawRect = True)
+    print(res)
 
     # #get score of the run
     score_img = ScreenCapture.get_screen(
@@ -36,4 +44,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # play_game()
     main()

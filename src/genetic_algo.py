@@ -54,13 +54,13 @@ def main():
     toolbox.register("mutate", mutateFlipBit, indpb=0.05)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=2)
+    pop = toolbox.population(n=200)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 1
+    CXPB, MUTPB = 0.5, 0.005
 
     print("Start of evolution")
 
@@ -82,7 +82,7 @@ def main():
     g = 0
 
     # Begin the evolution
-    while max(fits) < 100 and g < 2:
+    while g < 100:
         # A new generation
         g = g + 1
         print("-- Generation %i --" % g)

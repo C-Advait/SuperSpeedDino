@@ -2,10 +2,10 @@ from pyautogui import press, keyDown, keyUp
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
+import time
 import sys, os
 import random
 import threading
-
 
 class Player:
 
@@ -25,21 +25,41 @@ class Player:
 
         self.create_genetic_info()
 
-    def raise_wait(self, time):
-        pass
+    def jump(self, time, keypressMut):  # press up key for `time` seconds
+        if keypressMut.acquire(blocking=False):
+            # print("action is jump, time = ", time)
+            keyDown("up")
+            keyup_timer = threading.Timer(time, keyUp, args = ("up", ) )
+            lock_release_timer = threading.Timer(time, keypressMut.release)
+            keyup_timer.start()
+            lock_release_timer.start()
+        else:
+            # print('another action has not released')
+            pass
 
-    def jump(self, time=1):  # press up key for `time` seconds
-        keyDown("up")
-        sleep(time)
-        keyUp("up")
+    def duck(self, time, keypressMut):  # press the down key for `time` seconds
 
-    def duck(self, time=1):  # press the down key for `time` seconds
-        keyDown("down")
-        sleep(time)
-        keyUp("down")
+        if keypressMut.acquire(blocking= False):
+            # print('action is duck, time = ', time)
+            keyDown("down")
+            keyup_timer = threading.Timer(time, keyUp, args = ("down", ))
+            lock_release_timer = threading.Timer(time, keypressMut.release)
+            keyup_timer.start()
+            lock_release_timer.start()
+        else:
+            # print('another action has not released')
+            pass
 
-    def do_nothing(self, time=1):
-        sleep(time)
+    def do_nothing(self, time, keypressMut):
+
+        if keypressMut.acquire(blocking=False):
+            # print('action is nothing, time = ', time)
+            lock_release_timer = threading.Timer(time, keypressMut.release)
+            lock_release_timer.start()
+        else:
+            # print('another action has not released')
+            pass
+
 
     def create_genetic_info(self):
 
@@ -59,6 +79,7 @@ class Player:
 
     def play(self):
 
+        keypressMut = threading.Lock()
         # create Imageprocess object to see what is happening in the game
         template_files = os.listdir("images/obstacle_images")
         for index, fileName in enumerate(template_files):
@@ -69,11 +90,15 @@ class Player:
         )  # get vision of the game
 
         game_over = False
+        time.sleep(1) #game actually resets
         press("space")  # start game
+        time.sleep(1) #game starts
         print("game started ")
+        if keypressMut.locked():
+            print('mutex acquired at start of individual')
 
         while not game_over:
-            # game starts. find image and make play
+            # game starts. find image and take action
             img = ScreenCapture.get_screen(
                 top=300, left=1000, width=700, height=200, delay=0
             )
@@ -86,8 +111,8 @@ class Player:
                     action, sleep = self.decisionGenes[obstacle][distance[0]][
                         distance[1]
                     ]
-                    print('action is: ', action, 'sleep = ', sleep)
-                    action(time=sleep)
+                    # print("res = ", res, 'action is: ', action, 'sleep = ', sleep)
+                    action(sleep, keypressMut)
 
             else:
                 game_over = True
@@ -95,7 +120,7 @@ class Player:
             top=300, left=1500, width=100, height=50, delay=0
         )
         score = int(game_vision.get_score(score_img))
-        print(score)
+        print('game done', score, '\n')
 
         return score
 
