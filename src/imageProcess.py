@@ -167,8 +167,8 @@ class ImageProcess:
         cv2.imshow('original image', image)
         cv2.imshow('binary thresh', thresh1)
         # cv2.imshow('trunc thresh', thresh3)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
         # kernel = np.ones((2, 2), np.float32) / 3
         # dst = cv2.filter2D(image, -1, kernel)
 
