@@ -6,6 +6,7 @@ import time
 import sys, os
 import random
 import threading
+import cv2
 
 class Player:
 
@@ -94,8 +95,6 @@ class Player:
         press("space")  # start game
         time.sleep(1) #game starts
         print("game started ")
-        if keypressMut.locked():
-            print('mutex acquired at start of individual')
 
         while not game_over:
             # game starts. find image and take action
@@ -119,7 +118,22 @@ class Player:
         score_img = ScreenCapture.get_screen(
             top=300, left=1500, width=100, height=50, delay=0
         )
-        score = int(game_vision.get_score(score_img))
+        try:
+            score = int(game_vision.get_score(score_img))
+
+        #score failed to be read, converted to int
+        except Exception as e:
+
+            with open('./errors/score_read.log', 'a+') as scoreFail:
+                scoreFail.write(str(e))
+            t = time.localtime()
+            timestamp = time.strftime('%b-%d-%Y_%H%M', t)
+            FILE_NAME = ("score_fail-" + timestamp)
+            cv2.imwrite(
+                r'./errors' + FILE_NAME + '.bmp', score_img
+                )
+            score = 42
+
         print('game done', score, '\n')
 
         return score
