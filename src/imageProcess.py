@@ -160,19 +160,18 @@ class ImageProcess:
 
         return obstacle_distances
 
-    def get_score(
-        self,
-        image,
-    ):
+    def get_score(self, image,):
 
-        kernel = np.ones((2, 2), np.float32) / 3
-        dst = cv2.filter2D(image, -1, kernel)
-        # plt.subplot(121),plt.imshow(img),plt.title('Original') # Plotting...
-        # plt.xticks([]), plt.yticks([])
-        # plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
-        # plt.xticks([]), plt.yticks([])
-        # plt.show()                                             #End Plotting
+        ret,thresh1 = cv2.threshold(image,127,255,cv2.THRESH_BINARY)
 
-        score = pytesseract.image_to_string(dst)
+        cv2.imshow('original image', image)
+        cv2.imshow('binary thresh', thresh1)
+        # cv2.imshow('trunc thresh', thresh3)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        # kernel = np.ones((2, 2), np.float32) / 3
+        # dst = cv2.filter2D(image, -1, kernel)
+
+        score = pytesseract.image_to_string(thresh1)
         # print(score)
         return score
