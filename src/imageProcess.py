@@ -27,7 +27,7 @@ class ImageProcess:
         for templatePath in list_of_template_paths:
             # print(templatePath)
 
-            self.templates[templatePath[23:-4]] = cv2.imread(
+            self.templates[templatePath[27:-4]] = cv2.imread(
                 templatePath, cv2.IMREAD_GRAYSCALE
             )
             # print(self.templates)
@@ -75,14 +75,15 @@ class ImageProcess:
                 thickness=2,
                 lineType=cv2.LINE_4,
             )
+            # self.show_image(image)
 
-            self.show_image(image)
         # print(bottom_right)
         return (
             bottom_right  # use bottom right corner to find distance from dino to object
         )
 
-    def find_obstacle(self, converted_image, template, method=None, drawRect=False):
+    def find_obstacle(self, converted_image, template, method=None,
+                        drawRect=False):
 
         result = cv2.matchTemplate(converted_image, template, self.match_method)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
@@ -107,8 +108,8 @@ class ImageProcess:
                     thickness=2,
                     lineType=cv2.LINE_4,
                 )
-                print("\n")
-                self.show_image(converted_image)
+                # self.show_image(converted_image)
+
             else:
                 pass
                 # print("did not want to show rectangle\n")
@@ -122,7 +123,7 @@ class ImageProcess:
 
         return None  #####probably shouldnt be returning anything
 
-    def get_distance(self, image, drawRect=False):
+    def get_distance(self, image, drawRect=False,):
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         x_diff = None
         y_diff = None
@@ -175,3 +176,45 @@ class ImageProcess:
         score = pytesseract.image_to_string(thresh1)
         # print(score)
         return score
+
+
+    def createVideo(self, image, fileName):
+
+        write_path = './test/image_recog/output/Nov-1-2020_1/'
+
+        converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
+        x_diff = None
+        y_diff = None
+        obstacle_distances = {}
+        dino_loc = self.find_dino(converted_image, drawRect=True)
+        for name, template in self.templates.items():
+            # print('name = ', name)
+            obs_loc = self.find_obstacle(converted_image, template, drawRect=True)
+
+            if obs_loc != None:
+                x_diff = obs_loc[0] - dino_loc[0]
+                y_diff = obs_loc[1] - dino_loc[1]
+
+                p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
+
+                cv2.line(
+                    converted_image,
+                    dino_loc,
+                    p2,
+                    color=(0, 255, 0),
+                    thickness=2,
+                    lineType=cv2.LINE_4,
+                )
+
+                obstacle_distances[name] = (x_diff, y_diff)
+                x_diff = None
+                y_diff = None
+                obs_loc = None
+
+        # print('name = ', name)
+        cv2.imwrite(write_path + fileName + '.bmp', converted_image)
+
+        if "game_over" in obstacle_distances.keys():
+            return -1
+
+        return obstacle_distances
