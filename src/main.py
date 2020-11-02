@@ -29,16 +29,16 @@ def main():
     # Create image processing object to use detection with
     imgProcess = ImageProcess(template_files, "images/dinosaur.PNG")
 
-    # #get image and find distance to all obstacles
-    # img = ScreenCapture.get_screen(
-    #     top = 300, left = 1000, width = 700,
-    #     height = 200, delay = 2
-    #     )
-    # res = imgProcess.get_distance(img, drawRect = True)
-    # print(res)
-    # #get score of the run
+    #get image and find distance to all obstacles
+    img = ScreenCapture.get_screen(
+        top = 160, left = 980, width = 600,
+        height = 130, delay = 0
+        )
+    res = imgProcess.get_distance(img, drawRect = True)
+    print(res)
+    #get score of the run
     score_img = ScreenCapture.get_screen(
-        top=300, left=1500, width=100, height=50, delay=2
+        top=135, left=1500, width=90, height=30, delay=0
     )
     # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     score = imgProcess.get_score(score_img)
