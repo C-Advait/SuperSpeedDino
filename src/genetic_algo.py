@@ -54,7 +54,7 @@ def main():
     toolbox.register("mutate", mutateFlipBit, indpb=0.05)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=20)
+    pop = toolbox.population(n=200 )
 
     # CXPB  is the probability with which two individuals
     #       are crossed

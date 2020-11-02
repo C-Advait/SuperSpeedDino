@@ -99,7 +99,8 @@ class Player:
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
-                top=300, left=1000, width=700, height=200, delay=0
+                top = 160, left = 980, width = 600,
+                height = 130, delay = 0
             )
             res = game_vision.get_distance(img)
             if res != -1:
@@ -115,8 +116,9 @@ class Player:
 
             else:
                 game_over = True
+
         score_img = ScreenCapture.get_screen(
-            top=300, left=1500, width=100, height=50, delay=0
+            top=135, left=1500, width=90, height=30, delay=0
         )
         try:
             score = int(game_vision.get_score(score_img))
