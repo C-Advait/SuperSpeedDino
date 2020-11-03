@@ -7,19 +7,25 @@ import sys, os
 import random
 import threading
 import cv2
+sys.path.append("/../")
 
 class Player:
 
-    decisionGenes = {
-        "double_cactus_small": None,
-        "quadruple_cactus": None,
-        "single_cactus": None,
-        "single_small_cactus": None,
-        "triple_cactus": None,
-    }
-
     def __init__(self):
         self.score = None
+
+        obstacle_directory = "images/obstacle_images"
+        file_list = os.listdir(obstacle_directory)
+
+        self.obs_names = list( map(
+            lambda x: os.path.splitext(os.path.basename(x))[0],
+            file_list
+        ))
+
+        self.obs_names.remove('game_over')
+
+        self.decisionGenes = { name: None for name in self.obs_names}
+        print(self.decisionGenes)
 
         for key in self.decisionGenes.keys():
             self.decisionGenes[key] = [[[] for i in range(100)] for i in range(951)]
@@ -64,30 +70,42 @@ class Player:
 
     def create_genetic_info(self):
 
+        #ground obstacles can only be jumped over
+        #bird can be ducked or jumped over
+        ground_obs_actions = [self.jump, self.do_nothing]
+        bird_obs_actions = [self.jump, self.do_nothing, self.duck]
+
+
         for key in self.decisionGenes.keys():
-            for i in range(len(self.decisionGenes[key])):
-                for j in range(len(self.decisionGenes[key][i])):
+            if 'bird' not in key:
+                for i in range(len(self.decisionGenes[key])):
+                    for j in range(len(self.decisionGenes[key][i])):
 
-                    randAction = random.randint(0, 2)
-                    randSleep = random.uniform(0.1, 1.5)
+                        randSleep = random.uniform(0.1, 1.5)
 
-                    if randAction == 0:
-                        self.decisionGenes[key][i][j] = [self.duck, randSleep]
-                    elif randAction == 1:
-                        self.decisionGenes[key][i][j] = [self.jump, randSleep]
-                    else:
-                        self.decisionGenes[key][i][j] = [self.do_nothing, randSleep]
+                        self.decisionGenes[key][i][j] = [
+                            random.choice(ground_obs_actions),
+                            randSleep
+                        ]
+            else:
+                for i in range(len(self.decisionGenes[key])):
+                    for j in range(len(self.decisionGenes[key][i])):
+
+                        randSleep = random.uniform(0.1, 1.5)
+
+                        self.decisionGenes[key][i][j] = [
+                            random.choice(bird_obs_actions),
+                            randSleep
+                        ]
 
     def play(self):
 
         keypressMut = threading.Lock()
         # create Imageprocess object to see what is happening in the game
-        template_files = os.listdir("images/obstacle_images")
-        for index, fileName in enumerate(template_files):
-            template_files[index] = "images/obstacle_images/" + fileName
+
         dinosaur_image_path = r"images/dinosaur.PNG"
         game_vision = ImageProcess(
-            template_files, dinosaur_image_path
+            self.obs_names , dinosaur_image_path
         )  # get vision of the game
 
         game_over = False

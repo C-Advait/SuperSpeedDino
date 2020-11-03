@@ -24,15 +24,21 @@ class ImageProcess:
             list_of_template_paths (list): list of file paths of the images to use as templates.
         """
         self.templates = {}
-        for templatePath in list_of_template_paths:
-            # print(templatePath)
 
-            self.templates[templatePath[27:-4]] = cv2.imread(
+        fileList = map(
+            lambda x: os.path.splitext(os.path.basename(x))[0],
+            list_of_template_paths
+        )
+        print(list(fileList))
+
+        for templatePath in list_of_template_paths:
+
+
+            self.templates[fileList] = cv2.imread(
                 templatePath, cv2.IMREAD_GRAYSCALE
             )
             # print(self.templates)
-            # make sure all templates were read correctly
-            ####NO CHECK CURRENTLY
+
         self.match_method = method
         self.dino_template = cv2.imread(dino_image_path, cv2.IMREAD_GRAYSCALE)
         # print(self.dino_template)
@@ -161,15 +167,16 @@ class ImageProcess:
 
         return obstacle_distances
 
-    def get_score(self, image,):
+    def get_score(self, image, show_score = False):
 
         ret,thresh1 = cv2.threshold(image,127,255,cv2.THRESH_BINARY)
 
-        # cv2.imshow('original image', image)
-        # cv2.imshow('binary thresh', thresh1)
-        # cv2.imshow('trunc thresh', thresh3)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        if show_score:
+            # cv2.imshow('original image', image)
+            cv2.imshow('binary thresh', thresh1)
+            # cv2.imshow('trunc thresh', thresh3)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
         # kernel = np.ones((2, 2), np.float32) / 3
         # dst = cv2.filter2D(image, -1, kernel)
 
@@ -180,7 +187,7 @@ class ImageProcess:
 
     def createVideo(self, image, fileName):
 
-        write_path = './test/image_recog/output/Nov-1-2020_1/'
+        write_path = './test/image_recog/output/Nov-2-2020/'
 
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         x_diff = None

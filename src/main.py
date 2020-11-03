@@ -31,17 +31,18 @@ def main():
 
     #get image and find distance to all obstacles
     img = ScreenCapture.get_screen(
-        top = 160, left = 980, width = 600,
+        top = 160, left = 710, width = 600,
         height = 130, delay = 0
         )
     res = imgProcess.get_distance(img, drawRect = True)
     print(res)
+    raise IndexError
     #get score of the run
     score_img = ScreenCapture.get_screen(
         top=135, left=1500, width=90, height=30, delay=0
     )
     # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
-    score = imgProcess.get_score(score_img)
+    score = imgProcess.get_score(score_img, show_score=True)
     print(int(score))
 
 
