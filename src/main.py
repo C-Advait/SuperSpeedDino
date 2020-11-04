@@ -7,7 +7,7 @@ import time
 from mss.windows import MSS as mss
 from pynput.mouse import Button, Controller
 from player import Player
-
+import win32api
 sys.path.append("/../")
 
 
@@ -18,6 +18,10 @@ def play_game():
     player.play()
 
 
+def cursorpos():
+    print('open game')
+    time.sleep(2)
+    print(win32api.GetCursorPos())
 
 def main():
 
@@ -48,4 +52,5 @@ def main():
 
 if __name__ == "__main__":
     # play_game()
-    main()
+    # main()
+    cursorpos()
