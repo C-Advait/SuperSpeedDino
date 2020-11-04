@@ -5,7 +5,6 @@ import cv2
 import numpy
 import time
 from mss.windows import MSS as mss
-from pynput.mouse import Button, Controller
 from player import Player
 import win32api
 sys.path.append("/../")
@@ -19,9 +18,7 @@ def play_game():
 
 
 def cursorpos():
-    print('open game')
-    time.sleep(2)
-    print(win32api.GetCursorPos())
+    ScreenCapture.cursorPos()
 
 def main():
 
@@ -33,7 +30,12 @@ def main():
     # Create image processing object to use detection with
     imgProcess = ImageProcess(template_files, "images/dinosaur.PNG")
 
+    ScreenCapture.cursorPos()
     #get image and find distance to all obstacles
+    print('outside screencapture')
+
+
+
     img = ScreenCapture.get_screen(
         top = 160, left = 710, width = 600,
         height = 130, delay = 0
@@ -52,5 +54,5 @@ def main():
 
 if __name__ == "__main__":
     # play_game()
-    # main()
-    cursorpos()
+    main()
+    # cursorpos()

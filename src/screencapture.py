@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 from mss.windows import MSS as mss
-from pynput import mouse
+from tkinter import Tk, Button, W
+import win32api
 import time
 
 
@@ -14,6 +15,33 @@ class ScreenCapture:
 
     def save_image(self, fileName):
         self._image.save(fileName, format="png")
+
+
+    @staticmethod
+    def cursorPos():
+        def enable_mouseposition():
+            window.after(10, get_mouseposition)
+
+
+        def get_mouseposition():
+            state_left = win32api.GetKeyState(0x01)
+            if state_left == -127 or state_left == -128:
+                xclick, yclick = win32api.GetCursorPos()
+                print(xclick, yclick)
+            else:
+                window.after(10, get_mouseposition)
+
+        window = Tk()
+        window.geometry("700x500")
+        window.title("Testing")
+
+        b = Button(window, text="OK", command=enable_mouseposition)
+        b.grid(row=0, column=2, sticky=W)
+        quit_b = Button(window, text="Quit", command=window.destroy)
+        quit_b.grid(row = 20, column = 20, sticky = W)
+
+        window.mainloop()
+
 
     @staticmethod
     def get_screen(
