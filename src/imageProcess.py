@@ -25,42 +25,32 @@ class ImageProcess:
         """
         self.templates = {}
 
-        fileList = map(
+        obsNameList = list(map(
             lambda x: os.path.splitext(os.path.basename(x))[0],
             list_of_template_paths
-        )
-        print(list(fileList))
+        ))
 
-        for templatePath in list_of_template_paths:
+        #assume list(map) is ordered
+        #thus both obsNameList and
+        #list_of_template_paths are in
+        #the same order
+        for i in range(len(list_of_template_paths)):
 
-
-            self.templates[fileList] = cv2.imread(
-                templatePath, cv2.IMREAD_GRAYSCALE
+            self.templates[obsNameList[i]] = cv2.imread(
+                list_of_template_paths[i], cv2.IMREAD_GRAYSCALE
             )
-            # print(self.templates)
 
         self.match_method = method
         self.dino_template = cv2.imread(dino_image_path, cv2.IMREAD_GRAYSCALE)
-        # print(self.dino_template)
         self.dino_template_w, self.dino_template_h = self.dino_template.shape[::-1]
 
     @staticmethod
-    def show_image(
-        cv2_image,
-    ):  # image should already be converted to the correct format
-        # Display the picture
-        # cv2.imshow("OpenCV/Numpy normal", img)
-
+    def show_image(cv2_image):
+        # image should already be converted to the correct format
         # Display the picture in grayscale
-        cv2.imshow("OpenCV/Numpy grayscale", cv2_image),
-        # cv2.cvtColor(converted_image, cv2.COLOR_BGRA2GRAY))
-
+        cv2.imshow("image", cv2_image),
         cv2.waitKey(0)
         cv2.destroyAllWindows
-        # Press "q" to quit
-        # if (cv2.waitKey(1) & 0xFF == ord("q")):
-        #     cv2.destroyAllWindows()
-        #     break
 
     def find_dino(self, image, method=None, drawRect=False):
 
@@ -92,12 +82,18 @@ class ImageProcess:
                         drawRect=False):
 
         result = cv2.matchTemplate(converted_image, template, self.match_method)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        # min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
         threshold = 0.9
-        # print('maxval is: ', max_val)
-        # print('max_loc is: ', max_loc)
+        # print('maxval: {}\n'.format(max_val))
 
-        if max_val >= threshold:
+        locations = np.where(result >= threshold)
+        locations = list(zip(*locations[::-1]))
+        print('locations is: ', locations)
+        if locations:
+            for location in locations:
+                print('({}, {})'.format(location[0], location[1]))
+            print('\n')
+
             if drawRect:
                 # get dimensions of template
                 template_w, template_h = template.shape[::-1]
@@ -121,7 +117,7 @@ class ImageProcess:
                 # print("did not want to show rectangle\n")
                 # place result into pipe or whatever. Or send to some getDistance() between dino and obstacle.
 
-            return max_loc  # top left of the template found in the image
+            return locations  # top left of the template found in the image
 
         else:
             pass
@@ -135,32 +131,37 @@ class ImageProcess:
         y_diff = None
         obstacle_distances = {}
         dino_loc = self.find_dino(converted_image, drawRect=drawRect)
+        print('dino_loc = ({}, {})'.format(dino_loc[0], dino_loc[1]))
         for name, template in self.templates.items():
+            print('obs is: ', name)
+            obs_locations = self.find_obstacle(converted_image, template, drawRect=drawRect)
 
-            obs_loc = self.find_obstacle(converted_image, template, drawRect=drawRect)
+            #list of obstacles returned
+            if obs_locations:
+                for i, location in enumerate(obs_locations):
+                    x_diff = location[0] - dino_loc[0]
+                    y_diff = location[1] - dino_loc[1]
 
-            if obs_loc != None:
-                x_diff = obs_loc[0] - dino_loc[0]
-                y_diff = obs_loc[1] - dino_loc[1]
+                    p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
 
-                p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
+                    if drawRect == True:
+                        cv2.line(
+                            converted_image,
+                            dino_loc,
+                            p2,
+                            color=(0, 255, 0),
+                            thickness=2,
+                            lineType=cv2.LINE_4,
+                        )
+                        self.show_image(converted_image)
 
-                if drawRect == True:
-                    cv2.line(
-                        converted_image,
-                        dino_loc,
-                        p2,
-                        color=(0, 255, 0),
-                        thickness=2,
-                        lineType=cv2.LINE_4,
-                    )
-                    self.show_image(converted_image)
+                    obstacle_distances[
+                        name + '_{}'.format(str(i))
+                        ] = (x_diff, y_diff)
 
-                obstacle_distances[name] = (x_diff, y_diff)
-
-            x_diff = None
-            y_diff = None
-            obs_loc = None
+                    x_diff = None
+                    y_diff = None
+                    obs_loc = None
 
         if "game_over" in obstacle_distances.keys():
             return -1
@@ -195,7 +196,6 @@ class ImageProcess:
         obstacle_distances = {}
         dino_loc = self.find_dino(converted_image, drawRect=True)
         for name, template in self.templates.items():
-            # print('name = ', name)
             obs_loc = self.find_obstacle(converted_image, template, drawRect=True)
 
             if obs_loc != None:

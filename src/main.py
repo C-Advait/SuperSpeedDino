@@ -35,10 +35,8 @@ def main():
         top = 172, left = -1543, width = 600,
         height = 125, delay = 0
         )
-    cv2.imshow('test',  img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    res = imgProcess.get_distance(img, drawRect = True)
+
+    res = imgProcess.get_distance(img, drawRect = False)
     print(res)
     # raise IndexError
     #get score of the run
@@ -52,5 +50,5 @@ def main():
 
 if __name__ == "__main__":
     # play_game()
-    main()
-    # cursorpos()
+    # main()
+    cursorpos()
