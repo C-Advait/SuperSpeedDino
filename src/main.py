@@ -30,22 +30,20 @@ def main():
     # Create image processing object to use detection with
     imgProcess = ImageProcess(template_files, "images/dinosaur.PNG")
 
-    ScreenCapture.cursorPos()
     #get image and find distance to all obstacles
-    print('outside screencapture')
-
-
-
     img = ScreenCapture.get_screen(
-        top = 160, left = 710, width = 600,
-        height = 130, delay = 0
+        top = 172, left = -1543, width = 600,
+        height = 125, delay = 0
         )
+    cv2.imshow('test',  img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     res = imgProcess.get_distance(img, drawRect = True)
     print(res)
-    raise IndexError
+    # raise IndexError
     #get score of the run
     score_img = ScreenCapture.get_screen(
-        top=135, left=1500, width=90, height=30, delay=0
+        top=142, left= -1009, width=65, height=20, delay=0
     )
     # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     score = imgProcess.get_score(score_img, show_score=True)
