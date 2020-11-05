@@ -125,7 +125,10 @@ class ImageProcess:
 
         return None  #####probably shouldnt be returning anything
 
-    def get_distance(self, image, drawRect=False,):
+    #finds dino location in addition to obstacles
+    #can be useful for video but pretty useless
+    #for actual gameplay
+    def get_distance_legacy(self, image, drawRect=False,):
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         x_diff = None
         y_diff = None
@@ -163,8 +166,31 @@ class ImageProcess:
                     y_diff = None
                     obs_loc = None
 
-        if "game_over" in obstacle_distances.keys():
+        if 'game_over_0' in obstacle_distances.keys():
             return -1
+
+        return obstacle_distances
+
+    def get_distance(self, image, drawRect=False,):
+        converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
+        obstacle_distances = {}
+
+        for name, template in self.templates.items():
+            print('obs is: ', name)
+            obs_locations = self.find_obstacle(converted_image, template, drawRect=drawRect)
+
+            #list of obstacles returned
+            if obs_locations:
+                for i, location in enumerate(obs_locations):
+                    x_pos = location[0]
+                    y_pos = location[1]
+
+                    obstacle_distances[
+                        name + '_{}'.format(str(i))
+                        ] = (x_pos, y_pos)
+
+        # if "game_over_0" in obstacle_distances.keys():
+        #     return -1
 
         return obstacle_distances
 
