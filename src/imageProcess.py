@@ -189,10 +189,18 @@ class ImageProcess:
                         name + '_{}'.format(str(i))
                         ] = (x_pos, y_pos)
 
-        # if "game_over_0" in obstacle_distances.keys():
-        #     return -1
+        if "game_over_0" in obstacle_distances.keys():
+            return -1
 
-        return obstacle_distances
+        #get closest obstacle and return its distance
+        closest_obs = sorted(
+            obstacle_distances.items(),
+            key= lambda x: x[1]
+        )
+        closest_obs = closest_obs[0]
+
+
+        return closest_obs
 
     def get_score(self, image, show_score = False):
 
@@ -204,6 +212,7 @@ class ImageProcess:
             # cv2.imshow('trunc thresh', thresh3)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
+
         # kernel = np.ones((2, 2), np.float32) / 3
         # dst = cv2.filter2D(image, -1, kernel)
 

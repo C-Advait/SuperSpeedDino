@@ -101,7 +101,6 @@ class Player:
     def play(self):
 
         keypressMut = threading.Lock()
-        # create Imageprocess object to see what is happening in the game
 
         dinosaur_image_path = r"images/dinosaur.PNG"
         game_vision = ImageProcess(
@@ -126,11 +125,12 @@ class Player:
 
                     # the action is that obstacle's action is the gene
                     # encoded for the obstacle and its x, y distance
-                    action, sleep = self.decisionGenes[obstacle][distance[0]][
+                    action, wait = self.decisionGenes[obstacle][
+                        distance[0]][
                         distance[1]
                     ]
                     # print("res = ", res, 'action is: ', action, 'sleep = ', sleep)
-                    action(sleep, keypressMut)
+                    action(wait, keypressMut)
 
             else:
                 game_over = True
