@@ -88,11 +88,8 @@ class ImageProcess:
 
         locations = np.where(result >= threshold)
         locations = list(zip(*locations[::-1]))
-        print('locations is: ', locations)
+        # print('locations is: ', locations)
         if locations:
-            for location in locations:
-                print('({}, {})'.format(location[0], location[1]))
-            print('\n')
 
             if drawRect:
                 # get dimensions of template
@@ -176,7 +173,7 @@ class ImageProcess:
         obstacle_distances = {}
 
         for name, template in self.templates.items():
-            print('obs is: ', name)
+            # print('obs is: ', name)
             obs_locations = self.find_obstacle(converted_image, template, drawRect=drawRect)
 
             #list of obstacles returned
@@ -193,14 +190,17 @@ class ImageProcess:
             return -1
 
         #get closest obstacle and return its distance
-        closest_obs = sorted(
-            obstacle_distances.items(),
-            key= lambda x: x[1]
-        )
-        closest_obs = closest_obs[0]
+        if obstacle_distances:
+            closest_obs = sorted(
+                obstacle_distances.items(),
+                key= lambda x: x[1]
+            )
+            closest_obs = closest_obs[0]
 
+            return closest_obs
 
-        return closest_obs
+        else:
+            return None
 
     def get_score(self, image, show_score = False):
 

@@ -7,25 +7,27 @@ from screencapture import ScreenCapture
 def main():
 
     # load obstacles
-    template_files = os.listdir(r"test/image_recog/obstacles")
+    template_files = os.listdir(r"images/obstacle_images")
     for index, fileName in enumerate(template_files):
-        template_files[index] = r'test/image_recog/obstacles/' + fileName
+        template_files[index] = r'images/obstacle_images/' + fileName
 
-    dinosaur_path = 'images/dinosaur.PNG'
+    dinosaur_path = './images/dinosaur.PNG'
 
     # Create image processing object to use detection with
     imgProcess = ImageProcess(template_files, dinosaur_path)
 
     print('focus game')
-    time.sleep(3)
+    time.sleep(2)
     i = 0
     gameOver = False
     while gameOver != -1:
         img = ScreenCapture.get_screen(
-            top = 300, left = 1000, width = 700,
-            height = 200, delay = 0
-            )
-        gameOver = imgProcess.createVideo(img, fileName= str(i))
+            top = 172, left = -1543, width = 600,
+            height = 125, delay = 0
+        )
+        gameOver = imgProcess.get_distance(img)
+        if gameOver:
+            print(gameOver)
         i += 1
 
 if __name__ == "__main__":
