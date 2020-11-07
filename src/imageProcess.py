@@ -25,7 +25,7 @@ class ImageProcess:
         """
         self.templates = {}
 
-        obsNameList = list(map(
+        self.obsNameList = list(map(
             lambda x: os.path.splitext(os.path.basename(x))[0],
             list_of_template_paths
         ))
@@ -36,13 +36,17 @@ class ImageProcess:
         #the same order
         for i in range(len(list_of_template_paths)):
 
-            self.templates[obsNameList[i]] = cv2.imread(
+            self.templates[self.obsNameList[i]] = cv2.imread(
                 list_of_template_paths[i], cv2.IMREAD_GRAYSCALE
             )
 
         self.match_method = method
         self.dino_template = cv2.imread(dino_image_path, cv2.IMREAD_GRAYSCALE)
         self.dino_template_w, self.dino_template_h = self.dino_template.shape[::-1]
+
+
+    def get_obs_names(self):
+        return self.obsNameList
 
     @staticmethod
     def show_image(cv2_image):

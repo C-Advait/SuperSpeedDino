@@ -3,9 +3,7 @@ from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
 import time
-import sys, os
-import random
-import threading
+import sys, os,  random, threading, re
 import cv2
 sys.path.append("/../")
 
@@ -14,21 +12,26 @@ class Player:
     def __init__(self):
         self.score = None
 
-        obstacle_directory = "images/obstacle_images"
-        file_list = os.listdir(obstacle_directory)
+        # Create image processing object to use detection with
+        template_files = os.listdir("images/obstacle_images")
+        for index, fileName in enumerate(template_files):
+            template_files[index] = "images/obstacle_images/" + fileName
+        dinosaur_image_path = r"images/dinosaur.PNG"
 
-        self.obs_names = list( map(
-            lambda x: os.path.splitext(os.path.basename(x))[0],
-            file_list
-        ))
+        self.game_vision= ImageProcess(template_files, dinosaur_image_path)
 
-        self.obs_names.remove('game_over')
+        self.obs_names = self.game_vision.get_obs_names()
+
+        try:
+            self.obs_names.remove('game_over')
+        except ValueError:
+            pass
 
         self.decisionGenes = { name: None for name in self.obs_names}
-        print(self.decisionGenes)
+        print(self.decisionGenes) 
 
         for key in self.decisionGenes.keys():
-            self.decisionGenes[key] = [[[] for i in range(100)] for i in range(951)]
+            self.decisionGenes[key] = [[[] for i in range(100)] for i in range(650)]
 
         self.create_genetic_info()
 
@@ -101,13 +104,9 @@ class Player:
     def play(self):
 
         keypressMut = threading.Lock()
-
-        dinosaur_image_path = r"images/dinosaur.PNG"
-        game_vision = ImageProcess(
-            self.obs_names , dinosaur_image_path
-        )  # get vision of the game
-
+        pattern = re.compile('_\d+')
         game_over = False
+
         time.sleep(1) #game actually resets
         press("space")  # start game
         time.sleep(1) #game starts
@@ -116,34 +115,32 @@ class Player:
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
-                top = 160, left = 980, width = 600,
-                height = 130, delay = 0
+                top = 172, left = -1543, width = 600,
+                height = 125, delay = 0
             )
-            res = game_vision.get_distance(img)
-            if res != -1:
-                for obstacle, distance in res.items():
+            res = self.game_vision.get_distance(img)
+            if res:
+                try:
+                    obstacle, distance = res
+                    match = pattern.search(obstacle)
 
-                    # the action is that obstacle's action is the gene
-                    # encoded for the obstacle and its x, y distance
-                    action, wait = self.decisionGenes[obstacle][
-                        distance[0]][
-                        distance[1]
-                    ]
-                    # print("res = ", res, 'action is: ', action, 'sleep = ', sleep)
+                    obs_name = obstacle[:match.span()[0]]
+                    action, wait = self.decisionGenes[obs_name][distance[0]][distance[1]]
                     action(wait, keypressMut)
 
-            else:
-                game_over = True
+                #res = -1
+                except TypeError:
+                    game_over = True
 
         score_img = ScreenCapture.get_screen(
-            top=135, left=1500, width=90, height=30, delay=0
+            top=142, left= -1009, width=65, height=20, delay=1
         )
         try:
-            score = int(game_vision.get_score(score_img))
+            score = int(self. game_vision.get_score(score_img))
 
-        #score failed to be read, converted to int
-        except Exception as e:
-
+        #Score could not be converted to int
+        #Issue with OCR software
+        except ValueError as e:
             with open('./errors/score_read.log', 'a+') as scoreFail:
                 scoreFail.write(str(e))
             t = time.localtime()

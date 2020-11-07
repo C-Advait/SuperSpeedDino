@@ -40,12 +40,12 @@ def main():
     print(res)
     # raise IndexError
     #get score of the run
-    # score_img = ScreenCapture.get_screen(
-    #     top=142, left= -1009, width=65, height=20, delay=0
-    # )
-    # # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
-    # score = imgProcess.get_score(score_img, show_score=True)
-    # print(int(score))
+    score_img = ScreenCapture.get_screen(
+        top=142, left= -1009, width=65, height=20, delay=0
+    )
+    # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
+    score = imgProcess.get_score(score_img, show_score=True)
+    print(int(score))
 
 
 if __name__ == "__main__":
