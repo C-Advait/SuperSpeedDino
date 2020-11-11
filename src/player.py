@@ -2,9 +2,10 @@ from pyautogui import press, keyDown, keyUp
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
-import time
-import sys, os,  random, threading, re
+import sys, os,  random, threading, re, time
+from pprint import pprint
 import cv2
+import numpy as np
 sys.path.append("/../")
 
 class Player:
@@ -28,12 +29,13 @@ class Player:
             pass
 
         self.decisionGenes = { name: None for name in self.obs_names}
-        print(self.decisionGenes) 
+        print(self.decisionGenes)
 
         for key in self.decisionGenes.keys():
-            self.decisionGenes[key] = [[[] for i in range(100)] for i in range(650)]
+            self.decisionGenes[key] = np.empty([100,650], dtype=object)
 
         self.create_genetic_info()
+
 
     def jump(self, time, keypressMut):  # press up key for `time` seconds
         if keypressMut.acquire(blocking=False):
@@ -161,9 +163,9 @@ class Player:
 
 def main():
     player = Player()
-    sleep(2)
-    player.play()
-
+    # sleep(2)
+    # player.play()
+    pprint(player.decisionGenes['single_cactus_small'][0][0])
 
 if __name__ == "__main__":
     main()
