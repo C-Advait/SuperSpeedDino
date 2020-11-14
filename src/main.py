@@ -36,6 +36,10 @@ def main():
         height = 125, delay = 0
         )
 
+    cv2.imshow('test', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
     res = imgProcess.get_distance(img, drawRect = False)
     print(res)
     # raise IndexError

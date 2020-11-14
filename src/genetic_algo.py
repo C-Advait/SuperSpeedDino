@@ -1,12 +1,11 @@
+from time import sleep
+import sys, os, random
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from player import Player
-from time import sleep
-import sys, os
 from deap import base
 from deap import creator
 from deap import tools
-import random
 
 
 def evalPlayer(Individual):
@@ -15,34 +14,44 @@ def evalPlayer(Individual):
 
 
 # 2 point crossover on player individuals
-def twoPointCrossOver(ind1, ind2):
+def crossOver_twoPoint(ind1, ind2):
 
     # need to cross over all types of obstacles
-    # print('sample before crossover: ', ind1.decisionGenes['double_cactus_small'][0])
-    for obstacle_gene in Player.decisionGenes:
-        for outer_list in range(len(ind1.decisionGenes[obstacle_gene])):
+    for obstacle_gene in ind1.decisionGenes.keys():
 
-            #gene by gene crossover
-            ind1GeneList = ind1.decisionGenes[obstacle_gene][outer_list]
-            ind2GeneList = ind2.decisionGenes[obstacle_gene][outer_list]
+        #Crossover of the x-position (outer) list
+        tools.cxTwoPoint(
+            ind1.decisionGenes[obstacle_gene],
+            ind2.decisionGenes[obstacle_gene])
 
-            #in place crossover
-            tools.cxTwoPoint(ind1GeneList, ind2GeneList)
-    # print('sample after crossover: ', ind1.decisionGenes['double_cactus_small'][0])
     return None
 
-def mutateFlipBit(individual, indpb):
 
-    # need to pass over all types of obstacles
-    # print('sample before mutation: ', individual.decisionGenes['double_cactus_small'][0])
-    for obstacle_gene in Player.decisionGenes:
-        for outer_list in range(len(individual.decisionGenes[obstacle_gene])):
+def actionMutation(individual, curr_action, indpb, obstacle_gene):
+    #limit possibilities
+    ground_actions = [individual.jump, individual.do_nothing]
+    bird_actions = [individual.jump, individual.do_nothing, individual.duck]
+    if random.random() < indpb:
+        #randomly pick an action, may or may not be the same
+        if 'bird' in obstacle_gene:
+            return random.choice(bird_actions)
+        else:
+            return random.choice(ground_actions)
 
-            #mutation of position of elements in list
-            indivGeneList = individual.decisionGenes[obstacle_gene][outer_list]
-            #in place mutation
-            tools.mutShuffleIndexes(indivGeneList, indpb)
-    # print('sample after mutation: ', individual.decisionGenes['double_cactus_small'][0])
+def timeMutation(timeSequence, sigma, mu, indpb):
+    ret = tools.mutGaussian(timeSequence, mu, sigma, indpb)
+    return ret[0][0]/2
+
+#new action and time
+#time is guassian distributed around the current time
+def mutate(individual, indpb):
+    for obstacle_gene in individual.decisionGenes.keys():
+        for x_list in individual.decisionGenes[obstacle_gene]:
+            for y in x_list:
+                y[0] = actionMutation(individual, y[0], indpb, obstacle_gene)
+                y[1] = timeMutation([y[1]], sigma=0.3, mu=y[1], indpb=indpb)
+
+    return None
 
 def main():
     toolbox = base.Toolbox()
@@ -50,17 +59,17 @@ def main():
     creator.create("Individual", Player, fitness=creator.FitnessMax)
     toolbox.register("population", tools.initRepeat, list, creator.Individual)
     toolbox.register("evaluate", evalPlayer)
-    toolbox.register("mate", twoPointCrossOver)
-    toolbox.register("mutate", mutateFlipBit, indpb=0.05)
+    toolbox.register("mate", crossOver_twoPoint)
+    toolbox.register("mutate", mutate, indpb=1)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=10)
+    pop = toolbox.population(n=2)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.005
+    CXPB, MUTPB = 1, 1
 
     print("Start of evolution")
 
@@ -104,11 +113,16 @@ def main():
                 del child2.fitness.values
 
         for mutant in offspring:
-
             # mutate an individual with probability MUTPB
             if random.random() < MUTPB:
+                print('mutating\n')
                 toolbox.mutate(mutant)
                 del mutant.fitness.values
+
+        print('original:')
+        print(pop[0].decisionGenes['single_cactus_small'][0][0])
+        print('\nnew:')
+        print(offspring[0].decisionGenes['single_cactus_small'][0][0], '\n')
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]

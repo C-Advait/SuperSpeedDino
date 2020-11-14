@@ -29,10 +29,10 @@ class Player:
             pass
 
         self.decisionGenes = { name: None for name in self.obs_names}
-        print(self.decisionGenes)
+        # print(self.decisionGenes)
 
         for key in self.decisionGenes.keys():
-            self.decisionGenes[key] = np.empty([100,650], dtype=object)
+            self.decisionGenes[key] = np.empty([650,100], dtype=object)
 
         self.create_genetic_info()
 
@@ -122,6 +122,7 @@ class Player:
             )
             res = self.game_vision.get_distance(img)
             if res:
+                # print(res)
                 try:
                     obstacle, distance = res
                     match = pattern.search(obstacle)
@@ -131,7 +132,7 @@ class Player:
                     action(wait, keypressMut)
 
                 #res = -1
-                except TypeError:
+                except:
                     game_over = True
 
         score_img = ScreenCapture.get_screen(
@@ -163,9 +164,9 @@ class Player:
 
 def main():
     player = Player()
-    # sleep(2)
-    # player.play()
-    pprint(player.decisionGenes['single_cactus_small'][0][0])
+    sleep(2)
+    player.play()
+    # pprint(player.decisionGenes['single_cactus_small'][0][0])
 
 if __name__ == "__main__":
     main()
