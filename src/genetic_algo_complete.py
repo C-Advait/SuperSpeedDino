@@ -23,7 +23,7 @@ def crossOver_twoPoint(ind1, ind2):
         tools.cxTwoPoint(
             ind1.decisionGenes[obstacle_gene],
             ind2.decisionGenes[obstacle_gene])
-    return None
+    return (ind1, ind2)
 
 
 def actionMutation(individual, curr_action, indpb, obstacle_gene):
@@ -50,7 +50,7 @@ def mutate(individual, indpb):
                 y[0] = actionMutation(individual, y[0], indpb, obstacle_gene)
                 y[1] = timeMutation([y[1]], sigma=0.3, mu=y[1], indpb=indpb)
 
-    return None
+    return (individual,)
 
 def main():
 
@@ -71,7 +71,7 @@ def main():
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 0.05
+    CXPB, MUTPB = 1, 1
 
     eaSimple(pop, toolbox, CXPB, MUTPB, ngen=10, verbose=True)
 
