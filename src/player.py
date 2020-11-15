@@ -111,14 +111,14 @@ class Player:
 
         time.sleep(1) #game actually resets
         press("space")  # start game
-        time.sleep(1) #game starts
+        time.sleep(0.5) #game starts
         print("game started ")
 
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
                 top = 172, left = -1543, width = 600,
-                height = 125, delay = 0
+                height = 125, delay = 0.4
             )
             res = self.game_vision.get_distance(img)
             if res:
@@ -132,11 +132,11 @@ class Player:
                     action(wait, keypressMut)
 
                 #res = -1
-                except:
+                except TypeError:
                     game_over = True
 
         score_img = ScreenCapture.get_screen(
-            top=142, left= -1009, width=65, height=20, delay=1
+            top=142, left= -1009, width=65, height=20, delay=0
         )
         try:
             score = int(self. game_vision.get_score(score_img))

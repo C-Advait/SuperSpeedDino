@@ -1,12 +1,12 @@
 from time import sleep
-import sys, os, random
+import sys, os, random, copy
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from player import Player
 from deap import base
 from deap import creator
 from deap import tools
-
+import tracemalloc
 
 def evalPlayer(Individual):
     score = Individual.play()
@@ -18,12 +18,10 @@ def crossOver_twoPoint(ind1, ind2):
 
     # need to cross over all types of obstacles
     for obstacle_gene in ind1.decisionGenes.keys():
-
         #Crossover of the x-position (outer) list
         tools.cxTwoPoint(
             ind1.decisionGenes[obstacle_gene],
             ind2.decisionGenes[obstacle_gene])
-
     return None
 
 
@@ -54,13 +52,16 @@ def mutate(individual, indpb):
     return None
 
 def main():
+
+    tracemalloc.start()
+
     toolbox = base.Toolbox()
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
     creator.create("Individual", Player, fitness=creator.FitnessMax)
     toolbox.register("population", tools.initRepeat, list, creator.Individual)
     toolbox.register("evaluate", evalPlayer)
     toolbox.register("mate", crossOver_twoPoint)
-    toolbox.register("mutate", mutate, indpb=1)
+    toolbox.register("mutate", mutate, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
     pop = toolbox.population(n=2)
@@ -69,7 +70,7 @@ def main():
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 1
+    CXPB, MUTPB = 0, 0
 
     print("Start of evolution")
 
@@ -94,12 +95,17 @@ def main():
     while g < 100:
         # A new generation
         g = g + 1
-        print("-- Generation %i --" % g)
+        print("\n-- Generation %i --" % g)
 
         # Select the next generation individuals
-        offspring = toolbox.select(pop, len(pop))
+        selected_indivs = toolbox.select(pop, len(pop))
+        print('selected indivs: \n',selected_indivs)
+
+        print('Do selected indivs equal pop: ', selected_indivs is pop)
+
         # Clone the selected individuals
-        offspring = list(map(toolbox.clone, offspring))
+        offspring = copy.deepcopy(selected_indivs)
+
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -115,14 +121,8 @@ def main():
         for mutant in offspring:
             # mutate an individual with probability MUTPB
             if random.random() < MUTPB:
-                print('mutating\n')
                 toolbox.mutate(mutant)
                 del mutant.fitness.values
-
-        print('original:')
-        print(pop[0].decisionGenes['single_cactus_small'][0][0])
-        print('\nnew:')
-        print(offspring[0].decisionGenes['single_cactus_small'][0][0], '\n')
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -134,6 +134,10 @@ def main():
 
         # The population is entirely replaced by the offspring
         pop[:] = offspring
+
+        #delete for memory purposes
+        del offspring
+        del selected_indivs
 
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
@@ -153,6 +157,15 @@ def main():
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
+        snapshot = tracemalloc.take_snapshot()
+        top_stats = snapshot.statistics('lineno')
+
+        print("\n[ Top 10 ]")
+        for stat in top_stats[:10]:
+            print(stat)
+
+        if g == 10:
+            raise IndexError
 
 if __name__ == "__main__":
     main()
