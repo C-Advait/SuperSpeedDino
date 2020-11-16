@@ -30,12 +30,15 @@ def actionMutation(individual, curr_action, indpb, obstacle_gene):
     #limit possibilities
     ground_actions = [individual.jump, individual.do_nothing]
     bird_actions = [individual.jump, individual.do_nothing, individual.duck]
+
     if random.random() < indpb:
         #randomly pick an action, may or may not be the same
         if 'bird' in obstacle_gene:
             return random.choice(bird_actions)
         else:
             return random.choice(ground_actions)
+    else:
+        return curr_action
 
 def timeMutation(timeSequence, sigma, mu, indpb):
     ret = tools.mutGaussian(timeSequence, mu, sigma, indpb)
@@ -71,7 +74,7 @@ def main():
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 0
+    CXPB, MUTPB = 1, 1
 
     eaSimple(pop, toolbox, CXPB, MUTPB, ngen=10, verbose=True)
 

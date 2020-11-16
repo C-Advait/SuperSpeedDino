@@ -116,8 +116,6 @@ class Player:
 
     def play(self):
 
-        self.noneTest()
-
         keypressMut = threading.Lock()
         pattern = re.compile('_\d+')
         game_over = False

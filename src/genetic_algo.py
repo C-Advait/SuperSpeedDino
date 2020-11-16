@@ -22,19 +22,22 @@ def crossOver_twoPoint(ind1, ind2):
         tools.cxTwoPoint(
             ind1.decisionGenes[obstacle_gene],
             ind2.decisionGenes[obstacle_gene])
-    return None
+    return (ind1, ind2)
 
 
 def actionMutation(individual, curr_action, indpb, obstacle_gene):
     #limit possibilities
     ground_actions = [individual.jump, individual.do_nothing]
     bird_actions = [individual.jump, individual.do_nothing, individual.duck]
+
     if random.random() < indpb:
         #randomly pick an action, may or may not be the same
         if 'bird' in obstacle_gene:
             return random.choice(bird_actions)
         else:
             return random.choice(ground_actions)
+    else:
+        return curr_action
 
 def timeMutation(timeSequence, sigma, mu, indpb):
     ret = tools.mutGaussian(timeSequence, mu, sigma, indpb)
@@ -49,7 +52,7 @@ def mutate(individual, indpb):
                 y[0] = actionMutation(individual, y[0], indpb, obstacle_gene)
                 y[1] = timeMutation([y[1]], sigma=0.3, mu=y[1], indpb=indpb)
 
-    return None
+    return (individual,)
 
 def main():
 
@@ -70,7 +73,7 @@ def main():
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0, 0
+    CXPB, MUTPB = 0.2, 0.05
 
     print("Start of evolution")
 
@@ -163,9 +166,6 @@ def main():
         print("\n[ Top 10 ]")
         for stat in top_stats[:10]:
             print(stat)
-
-        if g == 10:
-            raise IndexError
 
 if __name__ == "__main__":
     main()
