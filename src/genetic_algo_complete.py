@@ -71,7 +71,7 @@ def main():
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 1
+    CXPB, MUTPB = 1, 0
 
     eaSimple(pop, toolbox, CXPB, MUTPB, ngen=10, verbose=True)
 

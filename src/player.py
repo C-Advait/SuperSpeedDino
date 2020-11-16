@@ -3,6 +3,7 @@ from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
 import sys, os,  random, threading, re, time
+import logging
 from pprint import pprint
 import cv2
 import numpy as np
@@ -33,6 +34,8 @@ class Player:
 
         for key in self.decisionGenes.keys():
             self.decisionGenes[key] = np.empty([650,100], dtype=object)
+
+        logging.basicConfig(filename='play_excepts.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
         self.create_genetic_info()
 
@@ -103,7 +106,17 @@ class Player:
                             randSleep
                         ]
 
+    def noneTest(self):
+        for key in self.decisionGenes:
+            for x_list in self.decisionGenes[key]:
+                for y in x_list:
+                    if None in y:
+                        print('key: ', key)
+
+
     def play(self):
+
+        self.noneTest()
 
         keypressMut = threading.Lock()
         pattern = re.compile('_\d+')
@@ -129,11 +142,15 @@ class Player:
 
                     obs_name = obstacle[:match.span()[0]]
                     action, wait = self.decisionGenes[obs_name][distance[0]][distance[1]]
+                    if action == None:
+                        print(action, wait, distance[0], distance[1])
+                        raise IndexError
                     action(wait, keypressMut)
 
                 #res = -1
-                except TypeError:
+                except TypeError as e:
                     game_over = True
+                    logging.warning('\ntyperrror', exc_info=True)
 
         score_img = ScreenCapture.get_screen(
             top=142, left= -1009, width=65, height=20, delay=0

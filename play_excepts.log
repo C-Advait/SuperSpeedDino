@@ -1,0 +1,48 @@
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
+root - WARNING - 
+typerrror
+Traceback (most recent call last):
+  File "c:\Users\advai\Documents\programming\dinosaur_algorithm\src\player.py", line 140, in play
+    obstacle, distance = res
+TypeError: cannot unpack non-iterable int object
