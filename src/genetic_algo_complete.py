@@ -8,6 +8,7 @@ from deap import creator
 from deap import tools
 from deap.algorithms import eaSimple
 import tracemalloc
+from pympler.tracker import SummaryTracker
 
 def evalPlayer(Individual):
     score = Individual.play()

@@ -7,6 +7,7 @@ from deap import base
 from deap import creator
 from deap import tools
 import tracemalloc
+from pympler.tracker import SummaryTracker
 
 def evalPlayer(Individual):
     score = Individual.play()
@@ -102,9 +103,6 @@ def main():
 
         # Select the next generation individuals
         selected_indivs = toolbox.select(pop, len(pop))
-        print('selected indivs: \n',selected_indivs)
-
-        print('Do selected indivs equal pop: ', selected_indivs is pop)
 
         # Clone the selected individuals
         offspring = copy.deepcopy(selected_indivs)
