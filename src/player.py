@@ -2,7 +2,7 @@ from pyautogui import press, keyDown, keyUp
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
-import sys, os,  random, threading, re, time
+import sys, os,  random, threading, re, time, copy
 import logging
 from pprint import pprint
 import cv2
@@ -11,7 +11,7 @@ sys.path.append("/../")
 
 class Player:
 
-    def __init__(self):
+    def __init__(self, create_info = True):
         self.score = None
 
         # Create image processing object to use detection with
@@ -37,7 +37,8 @@ class Player:
 
         logging.basicConfig(filename='play_excepts.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-        self.create_genetic_info()
+        if create_info:
+            self.create_genetic_info()
 
 
     def jump(self, time, keypressMut):  # press up key for `time` seconds
@@ -112,6 +113,16 @@ class Player:
                 for y in x_list:
                     if None in y:
                         print('key: ', key)
+
+    @staticmethod
+    def copy_player(individual):
+        new_player = Player(create_info=False)
+        for key in individual.decisionGenes:
+            new_player.decisionGenes[key] = copy.deepcopy(
+                individual.decisionGenes[key]
+            )
+
+        return new_player
 
 
     def play(self):
