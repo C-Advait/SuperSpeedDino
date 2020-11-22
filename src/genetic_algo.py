@@ -3,11 +3,11 @@ import sys, os, random, copy
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from player import Player
-from deap import base
-from deap import creator
-from deap import tools
-import tracemalloc
+from deap import base, creator, tools
+import pickle
+import tracemalloc, ray
 from pympler.tracker import SummaryTracker
+from pprint import pprint
 
 def evalPlayer(Individual):
     score = Individual.play()
@@ -55,9 +55,15 @@ def mutate(individual, indpb):
 
     return (individual,)
 
+@ray.remote
+def indiv_copier(pickled_individual):
+    # print('indiv is: ', pickled_individual)
+    return copy.deepcopy(pickled_individual)
+
 def main():
 
     tracemalloc.start()
+    ray.init()
 
     toolbox = base.Toolbox()
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -68,7 +74,7 @@ def main():
     toolbox.register("mutate", mutate, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=2)
+    pop = toolbox.population(n=5)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
@@ -86,6 +92,7 @@ def main():
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
+
 
     print("  Evaluated %i individuals" % len(pop))
 
@@ -105,8 +112,13 @@ def main():
         selected_indivs = toolbox.select(pop, len(pop))
 
         # Clone the selected individuals
-        offspring = copy.deepcopy(selected_indivs)
-
+        offspring_arr = []
+        for indiv in selected_indivs:
+            pkl_indiv = pickle.dumps(indiv)
+            offspring_arr.append(indiv_copier.remote(pkl_indiv))
+        offspring = [pickle.loads(indiv) for indiv in ray.get(offspring_arr)]
+        del offspring_arr
+        del selected_indivs
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -138,7 +150,6 @@ def main():
 
         #delete for memory purposes
         del offspring
-        del selected_indivs
 
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
