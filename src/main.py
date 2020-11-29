@@ -5,7 +5,7 @@ import cv2
 import numpy
 import time
 from mss.windows import MSS as mss
-from player import Player
+from player import Player1D, Player2D
 import win32api
 sys.path.append("/../")
 
@@ -32,8 +32,8 @@ def main():
 
     #get image and find distance to all obstacles
     img = ScreenCapture.get_screen(
-        top = 172, left = -1543, width = 600,
-        height = 125, delay = 0
+            top = 172, left = -1524, width = 400,
+            height = 120, delay = 0
         )
 
     cv2.imshow('test', img)

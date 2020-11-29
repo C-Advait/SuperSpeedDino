@@ -221,6 +221,8 @@ class ImageProcess:
         # dst = cv2.filter2D(image, -1, kernel)
 
         score = pytesseract.image_to_string(thresh1)
+        if 'o' in score:
+            score.replace('o', '0')
         # print(score)
         return score
 

@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 sys.path.append("/../")
 
-class Player:
+class Player2D:
 
     def __init__(self, create_info = True):
         self.score = None
@@ -185,6 +185,118 @@ class Player:
 
     def __len__(self):
         return 95100
+
+
+class Player1D(Player2D):
+
+    def __init__(self):
+        self.score = None
+
+        # Create image processing object to use detection with
+        template_files = os.listdir("images/obstacle_images")
+        for index, fileName in enumerate(template_files):
+            template_files[index] = "images/obstacle_images/" + fileName
+        dinosaur_image_path = r"images/dinosaur.PNG"
+
+        self.game_vision= ImageProcess(template_files, dinosaur_image_path)
+
+        self.obs_names = self.game_vision.get_obs_names()
+
+        try:
+            self.obs_names.remove('game_over')
+        except ValueError:
+            pass
+
+        self.decisionGenes = { name: None for name in self.obs_names}
+        # print(self.decisionGenes)
+
+        for key in self.decisionGenes.keys():
+            self.decisionGenes[key] = np.empty(400, dtype=object)
+
+        logging.basicConfig(filename='play_excepts.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+        self.create_genetic_info()
+
+    def create_genetic_info(self):
+
+        #ground obstacles can only be jumped over
+        #bird can be ducked or jumped over
+        ground_obs_actions = [self.jump, self.do_nothing]
+        bird_obs_actions = [self.jump, self.do_nothing, self.duck]
+
+
+        for key in self.decisionGenes.keys():
+            if 'bird' not in key:
+                for i in range(len(self.decisionGenes[key])):
+                    randSleep = random.uniform(0.1, 1.5)
+
+                    self.decisionGenes[key][i] = [
+                        random.choice(ground_obs_actions),
+                        randSleep
+                    ]
+            else:
+                for i in range(len(self.decisionGenes[key])):
+                    randSleep = random.uniform(0.1, 1.5)
+
+                    self.decisionGenes[key][i] = [
+                        random.choice(bird_obs_actions),
+                        randSleep
+                    ]
+
+    def play(self):
+
+        keypressMut = threading.Lock()
+        pattern = re.compile('_\d+')
+        game_over = False
+
+        time.sleep(1) #game actually resets
+        press("space")  # start game
+        time.sleep(0.5) #game starts
+        print("game started ")
+
+        while not game_over:
+            # game starts. find image and take action
+            img = ScreenCapture.get_screen(
+                top = 172, left = -1524, width = 400,
+                height = 125, delay = 0
+            )
+            res = self.game_vision.get_distance(img)
+            if res:
+                try:
+                    obstacle, distance = res
+                    match = pattern.search(obstacle)
+
+                    obs_name = obstacle[:match.span()[0]]
+                    action, wait = self.decisionGenes[obs_name][distance[0]]
+                    action(wait, keypressMut)
+
+                #res = -1
+                except TypeError as e:
+                    game_over = True
+
+        score_img = ScreenCapture.get_screen(
+            top=142, left= -1009, width=65, height=20, delay=0
+        )
+        try:
+            score = int(self.game_vision.get_score(score_img))
+
+        #Score could not be converted to int
+        #Issue with OCR software
+        except ValueError as e:
+            with open('./errors/score_read.log', 'a+') as scoreFail:
+                scoreFail.write(str(e))
+            t = time.localtime()
+            timestamp = time.strftime('%b-%d-%Y_%H%M', t)
+            FILE_NAME = (timestamp)
+            cv2.imwrite(
+                r'./errors/' + FILE_NAME + '.bmp', score_img
+            )
+            score = 42
+
+        print('game done', score, '\n')
+
+        return score
+
 
 
 def main():
