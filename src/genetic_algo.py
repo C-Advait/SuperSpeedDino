@@ -1,10 +1,10 @@
 from time import sleep
-import sys, os, random, copy
+import sys, os, random, copy, psutil
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from player import Player
 from deap import base, creator, tools
-import pickle
+import pickle, gc
 import tracemalloc, ray
 from pympler.tracker import SummaryTracker
 from pprint import pprint
@@ -60,9 +60,10 @@ def indiv_copier(pickled_individual):
     # print('indiv is: ', pickled_individual)
     return copy.deepcopy(pickled_individual)
 
+# @profile
 def main():
 
-    tracemalloc.start()
+    tracemalloc.start(2)
     ray.init()
 
     toolbox = base.Toolbox()
@@ -74,13 +75,20 @@ def main():
     toolbox.register("mutate", mutate, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=5)
+    process = psutil.Process(os.getpid())
+    print('memory usage before creating pop is: ',
+        process.memory_info().rss
+    )
+
+    pop = toolbox.population(n=1)
+    print("pop[0] refs after creating pop: ", sys.getrefcount(pop[0]))
+
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.2, 0.05
+    CXPB, MUTPB = 1, 1
 
     print("Start of evolution")
 
@@ -93,6 +101,7 @@ def main():
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
+    print("pop[0] refs after evaluating fitness: ", sys.getrefcount(pop[0]))
 
     print("  Evaluated %i individuals" % len(pop))
 
@@ -103,13 +112,17 @@ def main():
     g = 0
 
     # Begin the evolution
-    while g < 100:
+    while g < 1:
+
+        print("pop[0] refs inside loop: ", sys.getrefcount(pop[0]))
+
         # A new generation
         g = g + 1
         print("\n-- Generation %i --" % g)
 
         # Select the next generation individuals
         selected_indivs = toolbox.select(pop, len(pop))
+        print("pop[0] refs after selection: ", sys.getrefcount(pop[0]))
 
         # Clone the selected individuals
         offspring_arr = []
@@ -119,6 +132,8 @@ def main():
         offspring = [pickle.loads(indiv) for indiv in ray.get(offspring_arr)]
         del offspring_arr
         del selected_indivs
+
+        print("pop[0] refs after creating offsprings: ", sys.getrefcount(pop[0]))
 
         # Apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
@@ -131,11 +146,15 @@ def main():
                 del child1.fitness.values
                 del child2.fitness.values
 
+        print("pop[0] refs after crossover: ", sys.getrefcount(pop[0]))
+
         for mutant in offspring:
             # mutate an individual with probability MUTPB
             if random.random() < MUTPB:
                 toolbox.mutate(mutant)
                 del mutant.fitness.values
+
+        print("pop[0] refs after mutation: ", sys.getrefcount(pop[0]))
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -146,10 +165,53 @@ def main():
         print("  Evaluated %i individuals" % len(invalid_ind))
 
         # The population is entirely replaced by the offspring
+        # delete the current population
+
+        # print('garbage collection objects: \n', gc.get_objects())
+        print('pop[0] referrers after evaluation: ', gc.get_referrers(pop[0]))
+
+        # pop_referrals = gc.get_referents(pop)
+        # print('pop referrals is: ', pop_referrals)
+
+        # for index, item in enumerate(pop_referrals):
+        #     print(f'{index} has {sys.getrefcount(item)} references')
+        #     referres = gc.get_referrers(item)
+        #     print(f'{index} is referred by:\n', referres)
+
+        #     for referrer in referres:
+        #         del referrer
+
+
+        # for _ in range(sys.getrefcount(pop)):
+        #     try:
+        #         print('ref count is: ', sys.getrefcount(pop))
+        #         del pop
+        #     except UnboundLocalError:
+        #         break
+        # try:
+        #     print('print ref count is: ', sys.getrefcount(pop))
+        # except:
+        #     print('pop ref count is not existent')
+        #     pass
+
+        # print('garbage is: ', gc.garbage)
+        # gc.collect()
+        # print('memory usage after delete is: ',
+        #     process.memory_info().rss
+        # )
+
+        print("pop[0] refs before replacement: ", sys.getrefcount(pop[0]))
+        print("pop[0] referrs: ", gc.get_referrers(pop[0]))
+        print("po[0] referrents: ", gc.get_referents(pop[0]))
+
+        pop = []
         pop[:] = offspring
 
-        #delete for memory purposes
-        del offspring
+        # for _ in range(sys.getrefcount(offspring)):
+        #     try:
+        #         del offspring
+        #     except UnboundLocalError:
+        #         break
 
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
@@ -169,12 +231,21 @@ def main():
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
-        snapshot = tracemalloc.take_snapshot()
-        top_stats = snapshot.statistics('lineno')
+        # print("END OF EVOLUTION!!!!!!!")
+        # snapshot = tracemalloc.take_snapshot()
+        # top_stats = snapshot.statistics('lineno')
 
-        print("\n[ Top 10 ]")
-        for stat in top_stats[:10]:
-            print(stat)
+        # print("\n[ Top 10 ]")
+        # for stat in top_stats[:10]:
+        #     print(stat)
+
+    # print('outside loop')
+    # snapshot = tracemalloc.take_snapshot()
+    # top_stats = snapshot.statistics('lineno')
+
+    # print("\n[ Top 10 ]")
+    # for stat in top_stats[:10]:
+    #     print(stat)
 
 if __name__ == "__main__":
     main()
