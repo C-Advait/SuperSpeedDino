@@ -159,7 +159,6 @@ class Player:
                 #res = -1
                 except TypeError as e:
                     game_over = True
-                    logging.warning('\ntyperrror', exc_info=True)
 
         score_img = ScreenCapture.get_screen(
             top=142, left= -1009, width=65, height=20, delay=0
@@ -177,7 +176,7 @@ class Player:
             FILE_NAME = ("score_fail-" + timestamp)
             cv2.imwrite(
                 r'./errors' + FILE_NAME + '.bmp', score_img
-                )
+            )
             score = 42
 
         print('game done', score, '\n')
