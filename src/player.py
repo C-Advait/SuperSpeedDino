@@ -252,7 +252,7 @@ class Player1D(Player2D):
         time.sleep(1) #game actually resets
         press("space")  # start game
         time.sleep(0.5) #game starts
-        print("game started ")
+        # print("game started ")
 
         while not game_over:
             # game starts. find image and take action
@@ -293,7 +293,7 @@ class Player1D(Player2D):
             )
             score = 42
 
-        print('game done', score, '\n')
+        # print('game done', score, '\n')
 
         return score
 

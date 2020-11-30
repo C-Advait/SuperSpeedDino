@@ -81,13 +81,13 @@ def main1D():
     toolbox.register("mutate", mutate1D, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=100)
+    pop = toolbox.population(n=300)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 1
+    CXPB, MUTPB = 0.2, 0.05
 
     print("Start of evolution")
 
