@@ -1,6 +1,5 @@
-import time
-import cv2
-import sys, os
+import time, cv2, sys, os
+from datetime import datetime
 from PIL import Image
 import pytesseract
 from matplotlib import pyplot as plt
@@ -92,7 +91,7 @@ class ImageProcess:
 
         locations = np.where(result >= threshold)
         locations = list(zip(*locations[::-1]))
-        # print('locations is: ', locations)
+
         if locations:
 
             if drawRect:
@@ -100,7 +99,7 @@ class ImageProcess:
                 template_w, template_h = template.shape[::-1]
 
                 # positions of best match
-                top_left = max_loc
+                top_left = locations[0]
                 bottom_right = (top_left[0] + template_w, top_left[1] + template_h)
 
                 cv2.rectangle(
@@ -111,12 +110,10 @@ class ImageProcess:
                     thickness=2,
                     lineType=cv2.LINE_4,
                 )
-                # self.show_image(converted_image)
+                self.show_image(converted_image)
 
             else:
                 pass
-                # print("did not want to show rectangle\n")
-                # place result into pipe or whatever. Or send to some getDistance() between dino and obstacle.
 
             return locations  # top left of the template found in the image
 
@@ -124,12 +121,12 @@ class ImageProcess:
             pass
             # print('threshold of {} was not met, max_val was {}. \n'.format(threshold, max_val, ))
 
-        return None  #####probably shouldnt be returning anything
+        return None
 
     #finds dino location in addition to obstacles
     #can be useful for video but pretty useless
     #for actual gameplay
-    def get_distance_legacy(self, image, drawRect=False,):
+    def get_distance_DEPRECATED(self, image, drawRect=False,):
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         x_diff = None
         y_diff = None
@@ -138,7 +135,11 @@ class ImageProcess:
         print('dino_loc = ({}, {})'.format(dino_loc[0], dino_loc[1]))
         for name, template in self.templates.items():
             print('obs is: ', name)
-            obs_locations = self.find_obstacle(converted_image, template, drawRect=drawRect)
+            obs_locations = self.find_obstacle(
+                converted_image,
+                template,
+                drawRect=drawRect
+            )
 
             #list of obstacles returned
             if obs_locations:
@@ -178,7 +179,11 @@ class ImageProcess:
 
         for name, template in self.templates.items():
             # print('obs is: ', name)
-            obs_locations = self.find_obstacle(converted_image, template, drawRect=drawRect)
+            obs_locations = self.find_obstacle(
+                converted_image,
+                template,
+                drawRect=drawRect
+            )
 
             #list of obstacles returned
             if obs_locations:
@@ -229,40 +234,59 @@ class ImageProcess:
 
     def createVideo(self, image, fileName):
 
-        write_path = './test/image_recog/output/Nov-2-2020/'
+        write_path = './video_output/Nov-30-2020/'
 
         converted_image = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         x_diff = None
         y_diff = None
         obstacle_distances = {}
         dino_loc = self.find_dino(converted_image, drawRect=True)
+
         for name, template in self.templates.items():
-            obs_loc = self.find_obstacle(converted_image, template, drawRect=True)
+            obs_locs = self.find_obstacle(
+                converted_image,
+                template,
+                drawRect=True
+            )
 
-            if obs_loc != None:
-                x_diff = obs_loc[0] - dino_loc[0]
-                y_diff = obs_loc[1] - dino_loc[1]
+            if obs_locs != None:
+                for i, (x_dist, y_dist) in enumerate(obs_locs):
+                    x_diff = x_dist - dino_loc[0]
+                    y_diff = y_dist - dino_loc[1]
 
-                p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
+                    p2 = (dino_loc[0] + x_diff, dino_loc[1] + y_diff)
 
-                cv2.line(
-                    converted_image,
-                    dino_loc,
-                    p2,
-                    color=(0, 255, 0),
-                    thickness=2,
-                    lineType=cv2.LINE_4,
-                )
+                    cv2.line(
+                        converted_image,
+                        dino_loc,
+                        p2,
+                        color=(0, 255, 0),
+                        thickness=2,
+                        lineType=cv2.LINE_4,
+                    )
 
-                obstacle_distances[name] = (x_diff, y_diff)
-                x_diff = None
-                y_diff = None
-                obs_loc = None
+                    obstacle_distances[
+                        name + '_{}'.format(str(i))
+                        ] = (x_dist, y_dist)
 
-        # print('name = ', name)
-        cv2.imwrite(write_path + fileName + '.bmp', converted_image)
+                    x_diff = None
+                    y_diff = None
+                    obs_loc = None
 
-        if "game_over" in obstacle_distances.keys():
+        ret = cv2.imwrite(fileName, converted_image)
+
+        if "game_over_0" in obstacle_distances.keys():
             return -1
 
-        return obstacle_distances
+        #get closest obstacle and return its distance
+        elif obstacle_distances:
+            closest_obs = sorted(
+                obstacle_distances.items(),
+                key= lambda x: x[1]
+            )
+            closest_obs = closest_obs[0]
+
+            return closest_obs
+
+        else:
+            return None
