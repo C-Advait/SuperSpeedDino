@@ -249,10 +249,9 @@ class Player1D(Player2D):
         pattern = re.compile('_\d+')
         game_over = False
 
-        time.sleep(1) #game actually resets
+        time.sleep(1) #game resets
         press("space")  # start game
         time.sleep(0.5) #game starts
-        # print("game started ")
 
         while not game_over:
             # game starts. find image and take action
@@ -263,11 +262,64 @@ class Player1D(Player2D):
             res = self.game_vision.get_distance(img)
             if res:
                 try:
-                    obstacle, distance = res
+                    obstacle, (x_dist, y_dist) = res
                     match = pattern.search(obstacle)
-
                     obs_name = obstacle[:match.span()[0]]
-                    action, wait = self.decisionGenes[obs_name][distance[0]]
+                    action, wait = self.decisionGenes[obs_name][x_dist]
+                    action(wait, keypressMut)
+
+                #res = -1
+                except TypeError as e:
+                    game_over = True
+
+        score_img = ScreenCapture.get_screen(
+            top=142, left= -1009, width=65, height=20, delay=0
+        )
+        try:
+            score = int(self.game_vision.get_score(score_img))
+
+        #Score could not be converted to int
+        #Issue with OCR software
+        except ValueError as e:
+            with open('./errors/score_read.log', 'a+') as scoreFail:
+                scoreFail.write(str(e))
+            t = time.localtime()
+            timestamp = time.strftime('%b-%d-%Y_%H%M', t)
+            FILE_NAME = (timestamp)
+            cv2.imwrite(
+                r'./errors/' + FILE_NAME + '.bmp', score_img
+            )
+            score = 42
+
+        # print('game done', score, '\n')
+
+        return score
+
+    def play_with_video(self):
+        keypressMut = threading.Lock()
+        pattern = re.compile('_\d+')
+        game_over = False
+        fileName = r'video_output\Nov-20-2020\'
+        counter += 1
+
+        time.sleep(1) #game resets
+        press("space")  # start game
+        time.sleep(0.5) #game starts
+
+        while not game_over:
+            # game starts. find image and take action
+            img = ScreenCapture.get_screen(
+                top = 172, left = -1524, width = 400,
+                height = 125, delay = 0
+            )
+
+            res = self.game_vision.createVideo(img, )
+            if res:
+                try:
+                    obstacle, (x_dist, y_dist) = res
+                    match = pattern.search(obstacle)
+                    obs_name = obstacle[:match.span()[0]]
+                    action, wait = self.decisionGenes[obs_name][x_dist]
                     action(wait, keypressMut)
 
                 #res = -1
