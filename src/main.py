@@ -40,7 +40,7 @@ def main():
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    res = imgProcess.get_distance(img, drawRect = False)
+    res = imgProcess.get_distance(img, drawRect = True)
     print(res)
     # raise IndexError
     #get score of the run
@@ -50,6 +50,12 @@ def main():
     # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     score = imgProcess.get_score(score_img, show_score=True)
     print(int(score))
+
+    img2 = ScreenCapture.get_screen(
+            top = 172, left = -1524, width = 400,
+            height = 120, delay = 0
+        )
+    imgProcess.createVideo(img2, 'testing.bmp')
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ def main1D():
     toolbox.register("mutate", mutate1D, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=300)
+    pop = toolbox.population(n=30)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
