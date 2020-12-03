@@ -58,6 +58,13 @@ class ImageProcess:
         result = cv2.matchTemplate(image, self.dino_template, self.match_method)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
+        #if dinosaur is in frame, continue.
+        #Else do nothing as distances cannot be computed
+        if max_val > 0.7:
+            pass
+        else:
+            return None
+
         bottom_right = (
             max_loc[0] + self.dino_template_w,
             max_loc[1] + self.dino_template_h,
@@ -239,6 +246,13 @@ class ImageProcess:
         y_diff = None
         obstacle_distances = {}
         dino_loc = self.find_dino(converted_image, drawRect=True)
+
+        #check if dino in frame
+        if dino_loc:
+            pass
+        else:
+            cv2.imwrite(fileName, converted_image)
+            return None
 
         for name, template in self.templates.items():
             obs_locs = self.find_obstacle(
