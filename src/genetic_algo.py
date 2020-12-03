@@ -1,5 +1,5 @@
 from time import sleep
-import sys, os, random, copy
+import sys, os, random, copy, shutil
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from player import Player1D
@@ -8,6 +8,17 @@ import pickle
 import tracemalloc, ray
 from pympler.tracker import SummaryTracker
 from pprint import pprint
+
+def del_video_folders(excludeArr, gen):
+    indivs_in_gen = os.listdir(
+        f'video_output/Dec-02-2020/gen-{gen}'
+    )
+    for indiv in indivs_in_gen:
+        print('indiv is: ', indiv)
+        if f"gen-{gen}/{indiv}" not in excludeArr:
+            shutil.rmtree(
+                f'video_output/Dec-02-2020/gen-{gen}/{indiv}/'
+            )
 
 def evalPlayer(Individual):
     score = Individual.play()
@@ -87,13 +98,13 @@ def main1D():
     toolbox.register("mutate", mutate1D, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=1)
+    pop = toolbox.population(n=1000)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 1, 1
+    CXPB, MUTPB = 0.2, 0.05
 
     # Variable keeping track of the number of generations
     g = 0
@@ -185,9 +196,12 @@ def main1D():
         print("-- End of (successful) evolution --")
 
         best_ind = tools.selBest(pop, 1)[0]
+        worst_ind = tools.selWorst(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind.identifier, \
             best_ind.fitness.values))
+        exclude_arr = [best_ind.identifier, worst_ind.identifier]
 
+        del_video_folders(exclude_arr, g)
 
 def main2D():
 
@@ -295,7 +309,15 @@ def main2D():
         print("-- End of (successful) evolution --")
 
         best_ind = tools.selBest(pop, 1)[0]
-        print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+        worst_ind = tools.selWorst(pop, 1)[0]
+        print("Best individual is {}, {}".format(
+            best_ind,
+            best_ind.fitness.values
+        ))
+
+
+
+
 
 if __name__ == "__main__":
     main1D()
