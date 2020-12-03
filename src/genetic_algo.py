@@ -14,7 +14,7 @@ def del_video_folders(excludeArr, gen):
         f'video_output/Dec-02-2020/gen-{gen}'
     )
     for indiv in indivs_in_gen:
-        print('indiv is: ', indiv)
+
         if f"gen-{gen}/{indiv}" not in excludeArr:
             shutil.rmtree(
                 f'video_output/Dec-02-2020/gen-{gen}/{indiv}/'
@@ -127,7 +127,7 @@ def main1D():
     fits = [ind.fitness.values[0] for ind in pop]
 
     # Begin the evolution
-    while g < 2:
+    while g < 500:
         # A new generation
         g = g + 1
         print("\n-- Generation %i --" % g)
