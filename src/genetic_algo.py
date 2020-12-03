@@ -13,6 +13,12 @@ def evalPlayer(Individual):
     score = Individual.play()
     return (score,)
 
+def evalPlayerVideo(Individual, gen):
+    identifier = Individual.get_identifier()
+    new_id = f'gen-{gen}/{identifier}'
+    Individual.set_identifier(new_id)
+    score = Individual.play_with_video()
+    return (score, )
 
 # 2 point crossover on player individuals
 def crossOver_twoPoint(ind1, ind2):
@@ -76,18 +82,21 @@ def main1D():
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
     creator.create("Individual", Player1D, fitness=creator.FitnessMax)
     toolbox.register("population", tools.initRepeat, list, creator.Individual)
-    toolbox.register("evaluate", evalPlayer)
+    toolbox.register("evaluate", evalPlayerVideo)
     toolbox.register("mate", crossOver_twoPoint)
     toolbox.register("mutate", mutate1D, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=30)
+    pop = toolbox.population(n=1)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.2, 0.05
+    CXPB, MUTPB = 1, 1
+
+    # Variable keeping track of the number of generations
+    g = 0
 
     print("Start of evolution")
 
@@ -96,7 +105,7 @@ def main1D():
     sleep(5)
 
     # Evaluate the entire population
-    fitnesses = list(map(toolbox.evaluate, pop))
+    fitnesses = [toolbox.evaluate(indiv, g) for indiv in pop]
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
@@ -106,11 +115,8 @@ def main1D():
     # Extracting all the fitnesses of
     fits = [ind.fitness.values[0] for ind in pop]
 
-    # Variable keeping track of the number of generations
-    g = 0
-
     # Begin the evolution
-    while g < 100:
+    while g < 2:
         # A new generation
         g = g + 1
         print("\n-- Generation %i --" % g)
@@ -124,6 +130,11 @@ def main1D():
             pkl_indiv = pickle.dumps(indiv)
             offspring_arr.append(indiv_copier.remote(pkl_indiv))
         offspring = [pickle.loads(indiv) for indiv in ray.get(offspring_arr)]
+
+        #set all individuals identifiers:
+        for child in offspring:
+            child.update_identifier()
+
         del offspring_arr
         del selected_indivs
 
@@ -146,7 +157,7 @@ def main1D():
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
+        fitnesses = [toolbox.evaluate(indiv, g) for indiv in invalid_ind]
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
@@ -174,8 +185,8 @@ def main1D():
         print("-- End of (successful) evolution --")
 
         best_ind = tools.selBest(pop, 1)[0]
-        print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-
+        print("Best individual is %s, %s" % (best_ind.identifier, \
+            best_ind.fitness.values))
 
 
 def main2D():
@@ -256,7 +267,7 @@ def main2D():
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
+        fitnesses = [toolbox.evaluate(indiv, g) for indiv in invalid_ind]
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 

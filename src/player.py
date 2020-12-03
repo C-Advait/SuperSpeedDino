@@ -2,10 +2,9 @@ from pyautogui import press, keyDown, keyUp
 from imageProcess import ImageProcess
 from screencapture import ScreenCapture
 from time import sleep
-import sys, os,  random, threading, re, time, copy
-import logging
+import sys, os, random, threading, re, time, copy
+import logging, cv2, string, shutil
 from pprint import pprint
-import cv2
 import numpy as np
 sys.path.append("/../")
 
@@ -13,6 +12,8 @@ class Player2D:
 
     def __init__(self, create_info = True):
         self.score = None
+        self.identifier = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=9))
 
         # Create image processing object to use detection with
         template_files = os.listdir("images/obstacle_images")
@@ -35,13 +36,17 @@ class Player2D:
         for key in self.decisionGenes.keys():
             self.decisionGenes[key] = np.empty([650,100], dtype=object)
 
-        logging.basicConfig(filename='play_excepts.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(
+            filename='play_excepts.log',
+            filemode='w',
+            format='%(name)s - %(levelname)s - %(message)s'
+        )
 
         if create_info:
             self.create_genetic_info()
 
-
-    def jump(self, time, keypressMut):  # press up key for `time` seconds
+    # press up key for `time` seconds
+    def jump(self, time, keypressMut):
         if keypressMut.acquire(blocking=False):
             # print("action is jump, time = ", time)
             keyDown("up")
@@ -53,7 +58,8 @@ class Player2D:
             # print('another action has not released')
             pass
 
-    def duck(self, time, keypressMut):  # press the down key for `time` seconds
+    # press the down key for `time` seconds
+    def duck(self, time, keypressMut):
 
         if keypressMut.acquire(blocking= False):
             # print('action is duck, time = ', time)
@@ -191,6 +197,8 @@ class Player1D(Player2D):
 
     def __init__(self):
         self.score = None
+        self.identifier = ''.join(random.choices(string.ascii_lowercase +
+                             string.digits, k=9))
 
         # Create image processing object to use detection with
         template_files = os.listdir("images/obstacle_images")
@@ -208,14 +216,24 @@ class Player1D(Player2D):
             pass
 
         self.decisionGenes = { name: None for name in self.obs_names}
-        # print(self.decisionGenes)
 
         for key in self.decisionGenes.keys():
             self.decisionGenes[key] = np.empty(400, dtype=object)
 
-        logging.basicConfig(filename='play_excepts.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename='play_excepts.log', \
+            filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
         self.create_genetic_info()
+
+    def get_identifier(self):
+        return self.identifier
+
+    def set_identifier(self, new_identifier):
+        self.identifier = new_identifier
+
+    def update_identifier(self):
+        self.identifier = ''.join(random.choices(string.ascii_lowercase +
+                             string.digits, k=9))
 
     def create_genetic_info(self):
 
@@ -299,8 +317,13 @@ class Player1D(Player2D):
         keypressMut = threading.Lock()
         pattern = re.compile('_\d+')
         game_over = False
-        fileName = r'video_output\Nov-20-2020\'
-        counter += 1
+        folderName = f'video_output/Dec-02-2020/{self.identifier}'
+        try:
+            os.makedirs(folderName)
+        except OSError as e:
+            logging.log(level=Warning, msg=e)
+
+        counter = 0
 
         time.sleep(1) #game resets
         press("space")  # start game
@@ -312,8 +335,9 @@ class Player1D(Player2D):
                 top = 172, left = -1524, width = 400,
                 height = 125, delay = 0
             )
-
-            res = self.game_vision.createVideo(img, )
+            res = self.game_vision.createVideo(img, \
+                folderName + f'/{counter}.bmp')
+            counter += 1
             if res:
                 try:
                     obstacle, (x_dist, y_dist) = res
@@ -349,12 +373,14 @@ class Player1D(Player2D):
 
         return score
 
+    def __len__(self):
+        return 400
 
 
 def main():
-    player = Player()
+    player = Player1D()
     sleep(2)
-    player.play()
+    player.play_with_video()
     # pprint(player.decisionGenes['single_cactus_small'][0][0])
 
 if __name__ == "__main__":

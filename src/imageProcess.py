@@ -3,10 +3,8 @@ from datetime import datetime
 from PIL import Image
 import pytesseract
 from matplotlib import pyplot as plt
-
-sys.path.append("/../")
-pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
 import numpy as np
+pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 
 class ImageProcess:
@@ -110,7 +108,7 @@ class ImageProcess:
                     thickness=2,
                     lineType=cv2.LINE_4,
                 )
-                self.show_image(converted_image)
+                # self.show_image(converted_image)
 
             else:
                 pass
@@ -274,7 +272,7 @@ class ImageProcess:
                     obs_loc = None
 
         ret = cv2.imwrite(fileName, converted_image)
-
+        # print('ret is ', ret)
         if "game_over_0" in obstacle_distances.keys():
             return -1
 

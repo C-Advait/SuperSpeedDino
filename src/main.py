@@ -1,12 +1,8 @@
 from screencapture import ScreenCapture
 from imageProcess import ImageProcess
-import sys, os
-import cv2
-import numpy
-import time
-from mss.windows import MSS as mss
+import sys, os, cv2, time
+import numpy as np
 from player import Player1D, Player2D
-import win32api
 sys.path.append("/../")
 
 
