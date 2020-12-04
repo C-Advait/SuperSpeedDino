@@ -10,15 +10,20 @@ from pympler.tracker import SummaryTracker
 from pprint import pprint
 
 def del_video_folders(excludeArr, gen):
-    indivs_in_gen = os.listdir(
-        f'video_output/Dec-02-2020/gen-{gen}'
-    )
+    try:
+        indivs_in_gen = os.listdir(
+            f'video_output/Dec-02-2020/gen-{gen}'
+        )
+    except FileNotFoundError:
+        return None
+
     for indiv in indivs_in_gen:
 
         if f"gen-{gen}/{indiv}" not in excludeArr:
             shutil.rmtree(
                 f'video_output/Dec-02-2020/gen-{gen}/{indiv}/'
             )
+    return None
 
 def evalPlayer(Individual):
     score = Individual.play()
@@ -120,8 +125,15 @@ def main1D():
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
 
-
+    print("\n-- Generation %i --" % g)
     print("  Evaluated %i individuals" % len(pop))
+    best_ind = tools.selBest(pop, 1)[0]
+    worst_ind = tools.selWorst(pop, 1)[0]
+    print("Best individual is %s, %s" % (best_ind.identifier, \
+        best_ind.fitness.values))
+    exclude_arr = [best_ind.identifier, worst_ind.identifier]
+
+    del_video_folders(exclude_arr, g)
 
     # Extracting all the fitnesses of
     fits = [ind.fitness.values[0] for ind in pop]
