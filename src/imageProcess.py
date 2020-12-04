@@ -40,7 +40,7 @@ class ImageProcess:
         self.match_method = method
         self.dino_template = cv2.imread(dino_image_path, cv2.IMREAD_GRAYSCALE)
         self.dino_template_w, self.dino_template_h = self.dino_template.shape[::-1]
-
+        self.dino_misses = 0
 
     def get_obs_names(self):
         return self.obsNameList
@@ -247,12 +247,18 @@ class ImageProcess:
         obstacle_distances = {}
         dino_loc = self.find_dino(converted_image, drawRect=True)
 
+
         #check if dino in frame
         if dino_loc:
+            self.dino_misses = 0
             pass
         else:
             cv2.imwrite(fileName, converted_image)
-            return None
+            self.dino_misses += 1
+            if self.dino_misses >= 25:
+                return -1
+            else:
+                return None
 
         for name, template in self.templates.items():
             obs_locs = self.find_obstacle(
