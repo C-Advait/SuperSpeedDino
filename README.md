@@ -46,7 +46,7 @@ element from the array for the obstacle, executing the action for the specified 
 * Game over ![game over](images/obstacle_images/game_over.PNG)
 
 ### Scoring
-Scoring is done using the *Pytessarct* OCR library, which converts a score, like below, into text.  
+Scoring is done using the *Pytesseract* OCR library, which converts a score, like below, into text.  
 This approach occasionaly produces errors, due to the nature of the pixelated font of the score.  
 
 As the library uses a neural network to interpret the characters, in the future it will be retrained 
