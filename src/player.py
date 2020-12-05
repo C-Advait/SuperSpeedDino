@@ -145,9 +145,10 @@ class Player2D:
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
-                top = 172, left = -1543, width = 600,
-                height = 125, delay = 0.4
+                top = 170, left = 378, width = 600,
+                height = 120, delay = 0
             )
+
             res = self.game_vision.get_distance(img)
             if res:
                 # print(res)
@@ -167,7 +168,7 @@ class Player2D:
                     game_over = True
 
         score_img = ScreenCapture.get_screen(
-            top=142, left= -1009, width=65, height=20, delay=0
+            top=140, left= 914, width=60, height=25, delay=0
         )
         try:
             score = int(self. game_vision.get_score(score_img))
@@ -218,7 +219,7 @@ class Player1D(Player2D):
         self.decisionGenes = { name: None for name in self.obs_names}
 
         for key in self.decisionGenes.keys():
-            self.decisionGenes[key] = np.empty(400, dtype=object)
+            self.decisionGenes[key] = np.empty(600, dtype=object)
 
         logging.basicConfig(filename='play_excepts.log', \
             filemode='w', format='%(name)s - %(levelname)s - %(message)s')
@@ -274,8 +275,8 @@ class Player1D(Player2D):
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
-                top = 172, left = -1524, width = 400,
-                height = 125, delay = 0
+                top = 170, left = 378, width = 600,
+                height = 120, delay = 0
             )
             res = self.game_vision.get_distance(img)
             if res:
@@ -291,7 +292,7 @@ class Player1D(Player2D):
                     game_over = True
 
         score_img = ScreenCapture.get_screen(
-            top=142, left= -1009, width=65, height=20, delay=0
+            top=140, left= 914, width=60, height=25, delay=0
         )
         try:
             score = int(self.game_vision.get_score(score_img))
@@ -332,8 +333,8 @@ class Player1D(Player2D):
         while not game_over:
             # game starts. find image and take action
             img = ScreenCapture.get_screen(
-                top = 172, left = -1524, width = 400,
-                height = 125, delay = 0
+                top = 170, left = 378, width = 600,
+                height = 120, delay = 0
             )
             res = self.game_vision.createVideo(img, \
                 folderName + f'/{counter}.bmp')
@@ -351,7 +352,7 @@ class Player1D(Player2D):
                     game_over = True
 
         score_img = ScreenCapture.get_screen(
-            top=142, left= -1009, width=65, height=20, delay=0
+            top=140, left= 914, width=60, height=25, delay=0
         )
         try:
             score = int(self.game_vision.get_score(score_img))

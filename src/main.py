@@ -28,7 +28,7 @@ def main():
 
     #get image and find distance to all obstacles
     img = ScreenCapture.get_screen(
-            top = 172, left = -1524, width = 400,
+            top = 170, left = 378, width = 600,
             height = 120, delay = 0
         )
 
@@ -41,7 +41,7 @@ def main():
     # raise IndexError
     #get score of the run
     score_img = ScreenCapture.get_screen(
-        top=142, left= -1009, width=65, height=20, delay=0
+        top=140, left= 914, width=60, height=25, delay=0
     )
     # imgProcess.show_image(cv2.cvtColor(score_img, cv2.COLOR_BGRA2GRAY))
     score = imgProcess.get_score(score_img, show_score=True)
