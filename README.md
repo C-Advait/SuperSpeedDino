@@ -1,6 +1,6 @@
 # SuperSpeedDino
 
-## Beat the Chrome Dinosaur game using genetic algorithms (and A.I. eventually...)
+## Beat the Chrome Dinosaur game using genetic algorithms (and R.L. eventually...)
 
 ![Game Image](images/game.PNG)
 
