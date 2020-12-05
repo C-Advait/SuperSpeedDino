@@ -21,7 +21,7 @@ Player.decisionGenes = {
 }
 ```
 
-Each keypress is protected by a `mutex`, which is released when the during for the action is completed.
+Each keypress is protected by a `mutex`, which is released when the duration for the action is completed.
 This mutex is released through a `threading.Timer` object, which allows asynchronous executing instead of blocking.  
 Therefore the player is able to execute an action, and continue to collect information about the obstacle location.
 
