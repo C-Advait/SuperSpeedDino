@@ -9,7 +9,7 @@ import tracemalloc, ray
 from pympler.tracker import SummaryTracker
 from pprint import pprint
 
-def del_video_folders(excludeArr, gen):
+def del_video_folders(excludeArr, gen ):
     try:
         indivs_in_gen = os.listdir(
             f'video_output/Dec-02-2020/gen-{gen}'
@@ -103,7 +103,7 @@ def main1D():
     toolbox.register("mutate", mutate1D, indpb=0.005)
     toolbox.register("select", tools.selTournament, tournsize=3)
 
-    pop = toolbox.population(n=100)
+    pop = toolbox.population(n=10)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
@@ -118,7 +118,7 @@ def main1D():
 
     # put screen into focus
     print("please put game screen in focus")
-    sleep(5)
+    sleep(1)
 
     # Evaluate the entire population
     fitnesses = [toolbox.evaluate(indiv, g) for indiv in pop]
@@ -131,9 +131,23 @@ def main1D():
     worst_ind = tools.selWorst(pop, 1)[0]
     print("Best individual is %s, %s" % (best_ind.identifier, \
         best_ind.fitness.values))
-    exclude_arr = [best_ind.identifier, worst_ind.identifier]
 
-    del_video_folders(exclude_arr, g)
+    ranked_indivs = sorted(
+        [(indiv.fitness.values[0], indiv.get_identifier()) for indiv in pop],
+        reverse=True
+    )
+
+    with open("score_and_rank_log.txt",'a+') as scoreLog:
+        scoreLog.write(f'---- Generation {g} ----\n')
+        for i, a in enumerate(ranked_indivs):
+            scoreLog.write(f'{a[0]}, {a[1]}')
+            scoreLog.write('  ')
+            if i % 5 == 4:
+                scoreLog.write('\n')
+        scoreLog.write('\n\n')
+
+    # exclude_arr = [best_ind.identifier, worst_ind.identifier]
+    # del_video_folders(exclude_arr, g)
 
     # Extracting all the fitnesses of
     fits = [ind.fitness.values[0] for ind in pop]
@@ -211,9 +225,23 @@ def main1D():
         worst_ind = tools.selWorst(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind.identifier, \
             best_ind.fitness.values))
-        exclude_arr = [best_ind.identifier, worst_ind.identifier]
 
-        del_video_folders(exclude_arr, g)
+        # exclude_arr = [best_ind.identifier, worst_ind.identifier]
+        # del_video_folders(exclude_arr, g)
+        ranked_indivs = sorted(
+            [(indiv.fitness.values[0], indiv.get_identifier()) for indiv in pop],
+            reverse=True
+        )
+
+        with open("score_and_rank_log.txt", 'a+') as scoreLog:
+            scoreLog.write(f'---- Generation {g} ----\n')
+            for i, a in enumerate(ranked_indivs):
+                scoreLog.write(f'{a[0]}, {a[1]}')
+                scoreLog.write('  ')
+                if i % 5 == 4:
+                    scoreLog.write('\n')
+            scoreLog.write('\n\n')
+
 
 def main2D():
 
@@ -326,6 +354,8 @@ def main2D():
             best_ind,
             best_ind.fitness.values
         ))
+
+        
 
 
 

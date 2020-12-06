@@ -356,6 +356,10 @@ class Player1D(Player2D):
         )
         try:
             score = int(self.game_vision.get_score(score_img))
+            if score == 435: #known error with OCR
+                score = 43
+            if score > 300:
+                raise ValueError(f"score {score} is too large\n")
 
         #Score could not be converted to int
         #Issue with OCR software
@@ -375,7 +379,7 @@ class Player1D(Player2D):
         return score
 
     def __len__(self):
-        return 400
+        return 500
 
 
 def main():
