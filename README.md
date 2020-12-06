@@ -59,15 +59,30 @@ under development.
 ## Learning and the Genetic Algorithm
 
 The Genetic Algorithm is implemented using the *DEAP* library.  
-It initializes a population of player objects, and uses mutation and crossover
-to improve its results. 
+It initializes a population of player objects and evaluates them through playing the game.  
+It them creates a new population through selection, and randomly uses mutation and crossover  
+on the selected individuals. 
 
+Through this process of natural selection, crossover, and mutation, it generates the best fit
+inidividuals for the game, improving its results over time.
+
+### Selection
+
+The selection process is done using the DEAP library *tools.selTournament()* method.  
+This method selects **3** random individuals in the population, and selects the best one.
+It does this *N* number of times, where *N* is the population size.  
+
+This random, tournament based, selection allows of variance, while also allows the possibility
+of the best inidividuals being selected multiple times, weeding out the worse individuals.
+
+### Crossover
 Crossover creates a new player that is a mix of two others, hopefully improving its
 performance. The arrays for each obstacle are crossed over, visualized below.
 This new player has parts of both original players that were mixed to create it.
 
 ![Two point crossover](https://www.tutorialspoint.com/genetic_algorithms/images/multi_point_crossover.jpg)
 
+### Mutation
 Mutation alters some aspect of a player that already exists. This occurs randomly
 in any of the arrays for each obstacle, affecting either what action is done,
 or how long is it done for.
