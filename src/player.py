@@ -366,6 +366,7 @@ class Player1D(Player2D):
         except ValueError as e:
             with open('./errors/score_read.log', 'a+') as scoreFail:
                 scoreFail.write(str(e))
+                scoreFail.write('\n')
             t = time.localtime()
             timestamp = time.strftime('%b-%d-%Y_%H%M', t)
             FILE_NAME = (timestamp)

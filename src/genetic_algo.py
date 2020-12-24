@@ -101,9 +101,9 @@ def main1D():
     toolbox.register("evaluate", evalPlayerVideo)
     toolbox.register("mate", crossOver_twoPoint)
     toolbox.register("mutate", mutate1D, indpb=0.005)
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    toolbox.register("select", tools.selTournament, tournsize=20)
 
-    pop = toolbox.population(n=10)
+    pop = toolbox.population(n=100)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
