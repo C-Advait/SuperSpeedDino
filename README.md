@@ -100,6 +100,4 @@ The game is played by creating a `Player` object, and using the method `Player.p
 This will give you a delay of 1 second, during which the user must focus the window with the game, by clicking on it. 
 
 The Player object will read in the screen input, and use the *PyAutoGui* library to 
-simulate jumping and ducking over obstacles. Get a 
-refreshing beverage, and watch the algorithm learn to master
-the game!
+simulate jumping and ducking over obstacles.
